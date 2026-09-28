@@ -23,7 +23,7 @@ npx --yes github:OahMoza/skill-accuracy-eval --dir "<你的技能根目录>"
 
 示例（Windows 豆包）：`--dir "C:\Users\<you>\AppData\Local\Doubao\User Data\<profile>\.doubao\agent_mode\workspace\.user_skills"`
 
-> 本仓库为**私有仓库**：执行 npx 的人需要是该仓库的 collaborator（GitHub 仓库 → Settings → Collaborators 添加），且本机 git 已配置对应凭据。
+> 本仓库为**公开仓库**：任何人有 GitHub 账号即可通过 npx 安装（首次运行 npx 会提示授权访问该仓库，选 Yes 即可）。
 
 ## 目录结构
 
