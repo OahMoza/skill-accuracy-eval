@@ -4,24 +4,39 @@
 
 - 一线喂入业务资料（技能说明 / 业务规则 / 用户问题样例 / 禁止行为）→ 自动生成「被测版本 / 用例集 / 金标准」三件套草稿 → 确认后执行评测。
 - 按「结果正确性 / 规则与边界 / 可靠与兜底」三维度逐条判定 `pass / fail / not_evaluated`，只出分数 + 证据，不判生死。
-- 完全自包含：不依赖任何评测平台、执行引擎或日志系统。
+- 完全自包含：不依赖任何评测平台、执行引擎或日志系统。SKILL.md 为标准 frontmatter 格式（name + description），豆包 / Claude Code / OpenCode 等支持 Agent Skills 的智能体均可直接识别。
 
 > 定位：在一线暂不具备正式评测平台时使用；不取代正式评测实现。
 
-## 快速开始（npx 安装）
+## 快速开始（npx 安装，支持通用智能体）
 
 ```bash
+# 交互式选择安装目标（推荐，列出各平台菜单）
 npx --yes github:OahMoza/skill-accuracy-eval
-```
 
-- 默认安装到 `~/.doubao/skills/skill-accuracy-eval`。
-- 指定技能根目录：
+# 直接指定平台（跳过菜单）
+npx --yes github:OahMoza/skill-accuracy-eval --platform claude
+npx --yes github:OahMoza/skill-accuracy-eval --platform opencode
 
-```bash
+# 自定义目录（优先级最高）
 npx --yes github:OahMoza/skill-accuracy-eval --dir "<你的技能根目录>"
+
+# 查看支持平台与默认目录
+npx --yes github:OahMoza/skill-accuracy-eval --list
 ```
 
-示例（Windows 豆包）：`--dir "C:\Users\<you>\AppData\Local\Doubao\User Data\<profile>\.doubao\agent_mode\workspace\.user_skills"`
+**平台与默认技能目录**：
+
+| 平台 | 全局技能目录 |
+|---|---|
+| 豆包 | `~/.doubao/skills/` |
+| Claude Code | `~/.claude/skills/` |
+| OpenCode | `~/.config/opencode/skills/` |
+| Cursor | `~/.cursor/skills/` |
+| Codex | `~/.agents/skills/` |
+| Windsurf | `~/.windsurf/skills/` |
+
+Windows 豆包示例：`--dir "C:\Users\<you>\AppData\Local\Doubao\User Data\<profile>\.doubao\agent_mode\workspace\.user_skills"`
 
 > 本仓库为**公开仓库**：任何人有 GitHub 账号即可通过 npx 安装（首次运行 npx 会提示授权访问该仓库，选 Yes 即可）。
 
@@ -40,7 +55,7 @@ skill-accuracy-eval/
 │       ├── three-piece.md       # 三件套演示版
 │       └── evaluation-report.md # 评测记录演示版
 ├── package.json                 # npx 包入口
-└── install.js                   # 安装脚本
+└── install.js                   # 安装脚本（平台可选：--platform / --dir / 交互菜单）
 ```
 
 ## 使用流程（摘要）
