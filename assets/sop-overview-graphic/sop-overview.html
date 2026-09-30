@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>skill-accuracy-eval 评测 SOP · FT 数据新闻规范版</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html,body { width:1440px; height:900px; overflow:hidden; }
+  body {
+    background:#FFF4E6; /* FT 报纸暖底 */
+    color:#1F1F1F;
+    font-family:'Segoe UI','Microsoft YaHei',sans-serif;
+    padding:34px 44px 30px;
+  }
+  /* 顶部：标题即结论 */
+  .masthead { border-bottom:3px solid #1F1F1F; padding-bottom:14px; margin-bottom:20px; }
+  .kicker {
+    font-family:Consolas,monospace; font-size:12px; letter-spacing:2px;
+    color:#B2430F; text-transform:uppercase; margin-bottom:8px;
+  }
+  h1 { font-size:34px; font-weight:800; letter-spacing:-0.5px; line-height:1.18; }
+  h1 .accent { color:#B2430F; }
+  .deckline { font-size:15px; color:#4A4A4A; margin-top:8px; font-weight:400; }
+  .deckline b { color:#1F1F1F; }
+  /* 主体网格：左流程 右判据 */
+  .grid { display:grid; grid-template-columns: 1fr 300px; gap:22px; height:612px; }
+  /* 左：流程时间线 */
+  .flow { }
+  .flow-title {
+    font-size:13px; font-weight:700; letter-spacing:1.5px; text-transform:uppercase;
+    color:#B2430F; margin-bottom:10px;
+  }
+  .stage {
+    display:grid; grid-template-columns:56px 1fr; gap:14px;
+    padding:8px 0; border-bottom:1px solid #E2CDB0;
+  }
+  .stage:last-child { border-bottom:none; }
+  .no {
+    font-family:Consolas,monospace; font-size:15px; font-weight:700; color:#B2430F;
+    line-height:1.5;
+  }
+  .st-body { }
+  .st-name { font-size:16px; font-weight:700; line-height:1.4; }
+  .st-name .role {
+    display:inline-block; font-size:11px; font-weight:600; color:#FFF4E6;
+    background:#B2430F; border-radius:2px; padding:1px 6px; margin-left:6px;
+    vertical-align:2px; letter-spacing:0.5px;
+  }
+  .st-name .role.blue { background:#31527E; }
+  .st-name .role.green { background:#3E6B4B; }
+  .st-name .role.gray { background:#5A5A5A; }
+  .st-desc { font-size:12.5px; color:#4A4A4A; line-height:1.5; margin-top:2px; }
+  .st-desc b { color:#1F1F1F; }
+  .gate { color:#B2430F; font-weight:700; }
+  /* 右：判据栏 */
+  .side { border-left:1px solid #E2CDB0; padding-left:22px; }
+  .side-block { margin-bottom:18px; }
+  .side-title {
+    font-size:13px; font-weight:700; letter-spacing:1.5px; text-transform:uppercase;
+    color:#B2430F; margin-bottom:8px;
+  }
+  .dim { border-bottom:1px solid #E2CDB0; padding:7px 0; }
+  .dim:last-child { border-bottom:none; }
+  .dim-q { font-size:13px; font-weight:700; }
+  .dim-a { font-size:12px; color:#4A4A4A; margin-top:1px; line-height:1.45; }
+  .law { font-size:12px; line-height:1.6; color:#333; }
+  .law b { color:#1F1F1F; }
+  .law .ln { font-family:Consolas,monospace; color:#B2430F; font-weight:700; }
+  /* 底部：口径与来源 */
+  .foot {
+    display:flex; justify-content:space-between; align-items:baseline;
+    border-top:2px solid #1F1F1F; margin-top:16px; padding-top:10px;
+  }
+  .foot .verdict {
+    font-size:13px; font-weight:700;
+  }
+  .foot .src { font-family:Consolas,monospace; font-size:11px; color:#6B5D4A; }
+  .model { font-family:Consolas,monospace; font-size:11px; color:#B2430F; }
+</style>
+</head>
+<body>
+  <div class="masthead">
+    <div class="kicker">Skill Accuracy Evaluation · Operating Procedure</div>
+    <h1>结论先说：一套「结果导向」的 Skill 准确性评测 SOP<br>评分只看最终结果；轨迹仅防守性参考；<span class="accent">先锁定三件套，再执行判定</span></h1>
+    <div class="deckline">判定只看 <b>最终答复 / 交付物 / 关键行为结果</b>（盲评不看轨迹）· 轨迹仅<b>防守性</b>：存疑时核验对账，<b>只可否决、不可授分</b> · 按 <b>三维度</b> 逐条 pass / fail / not_evaluated · 角色分离 · fail-closed · 版本锁定 · 不裁决</div>
+  </div>
+
+  <div class="grid">
+    <div class="flow">
+      <div class="flow-title">八个阶段 · 角色与闸门</div>
+
+      <div class="stage">
+        <div class="no">S0</div>
+        <div class="st-body">
+          <div class="st-name">生成三件套 <span class="role">一线 + 评测AI</span></div>
+          <div class="st-desc">喂料 ≥1 项（技能说明 / 业务规则 / 问题样例 / 禁止行为 / 真实数据 / 字段字典）→ 资料自检（<b>只查被测 skill</b>，不代写）→ 生成草稿（版本 / 用例≥5 / 金标准<b>双源</b>）→ <span class="gate">【确认门】人工逐条书面确认</span></div>
+        </div>
+      </div>
+      <div class="stage">
+        <div class="no">S1</div>
+        <div class="st-body">
+          <div class="st-name">锁定 <span class="role gray">人工</span></div>
+          <div class="st-desc">锁定三件套 + 用例编号 + 来源；<b>未锁定（含未确认项）→ 不进入 S2</b></div>
+        </div>
+      </div>
+      <div class="stage">
+        <div class="no">S2</div>
+        <div class="st-body">
+          <div class="st-name">执行 <span class="role green">执行者 · subagent</span></div>
+          <div class="st-desc">真实环境逐用例跑；只采集最终输出 + 关键行为结果；留<b>执行轨迹</b>（含 case_id，进证据包）</div>
+        </div>
+      </div>
+      <div class="stage">
+        <div class="no">S3</div>
+        <div class="st-body">
+          <div class="st-name">判定 <span class="role blue">判定者 · subagent</span></div>
+          <div class="st-desc">三维度盲评，引用条款理由；<b>fail-closed</b>；blocking fail → 整例 fail；可选多视角专家</div>
+        </div>
+      </div>
+      <div class="stage">
+        <div class="no">S3.5</div>
+        <div class="st-body">
+          <div class="st-name">存疑证伪 <span class="role blue">核验者 · subagent</span></div>
+          <div class="st-desc">判定者存疑 → 查对应轨迹对账 → 推翻或维持；<b>仅可否决、不可授分</b></div>
+        </div>
+      </div>
+      <div class="stage">
+        <div class="no">S4</div>
+        <div class="st-body">
+          <div class="st-name">汇总 <span class="role gray">评测AI</span></div>
+          <div class="st-desc">维度 × 用例打分表；通过率 = pass / (pass+fail)；not_evaluated 单列；<b>不合成单一总分</b></div>
+        </div>
+      </div>
+      <div class="stage">
+        <div class="no">S5</div>
+        <div class="st-body">
+          <div class="st-name">复核 <span class="role blue">复核者 + <span style="color:#FFF4E6;background:#1F1F1F;">人工</span></span></div>
+          <div class="st-desc">AI 全量核验（机械一致性 + 证据真实性）；人工分级抽审（blocking/fail/not_evaluated 必查）；<span class="gate">放行是人的决策</span></div>
+        </div>
+      </div>
+      <div class="stage">
+        <div class="no">S6</div>
+        <div class="st-body">
+          <div class="st-name">输出 <span class="role gray">评测AI</span></div>
+          <div class="st-desc">评测记录 + 维度汇总 + 边界说明 + 金标准确认状态；<b>版本锁定 · 不裁决</b></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="side">
+      <div class="side-block">
+        <div class="side-title">三个判定维度</div>
+        <div class="dim"><div class="dim-q">① 结果正确性</div><div class="dim-a">任务做对了吗？最终答复含 must_state、不含 must_not_state</div></div>
+        <div class="dim"><div class="dim-q">② 规则与边界</div><div class="dim-a">规则守住没？该拒绝的拒绝、不泄露、不编造、不越权</div></div>
+        <div class="dim"><div class="dim-q">③ 可靠与兜底</div><div class="dim-a">靠得住吗？缺信息澄清而非硬编、失败不假装成功</div></div>
+      </div>
+      <div class="side-block">
+        <div class="side-title">七条铁律（速查）</div>
+        <div class="law"><span class="ln">①</span> 业务正确性金标准<b>只认业务来源</b>；无业务资料 → 该维度 not_evaluated；<b>行为契约类</b>（格式 / 触发 / 边界）可抽自 Skill 自身声明，标「技能契约」仅证言行一致；<b>冲突业务优先</b><br><span class="ln">②</span> fail-closed：缺证据 = not_evaluated<br><span class="ln">③</span> 不裁决：只出分数 + 证据<br><span class="ln">④</span> 分维度独立表达<br><span class="ln">⑤</span> 样本边界，不扩全体承诺<br><span class="ln">⑥</span> 版本锁定，无版本不产结论<br><span class="ln">⑦</span> 对比只改一类变量</div>
+      </div>
+      <div class="side-block">
+        <div class="side-title">三条贯穿主线</div>
+        <div class="law"><b>角色分离</b>：执行 / 判定 / 核验 / 复核不兼任，不支持则单人切换并标注<br><b>证据链</b>：用例+输入+输出原文+行为结果+理由，他人可复核<br><b>fail-closed+双源</b>：业务正确性只认业务方书面确认，契约仅证言行一致</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="foot">
+    <div class="verdict">结论模板：在 N 个用例（版本 v，日期 d）上：结果正确性 X/N · 规则与边界 Y/N · 可靠与兜底 Z/N 通过；M 例阻断性失败；仅覆盖该版本与这些用例。</div>
+    <div class="src">来源：skill-accuracy-eval 仓库（公开）· 2026-09-30</div>
+  </div>
+</body>
+</html>
