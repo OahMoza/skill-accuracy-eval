@@ -1,6 +1,8 @@
 # SOP 总览（skill-accuracy-eval）
 
 > 本文件是评测 skill 的完整操作流程（SOP）速查版，与 SKILL.md / evaluation-framework.md 共用同一套结论、范围和纪律；角色分离、fail-closed、双源金标准均为硬约束。
+>
+> 配套视觉图（一屏速览）：`assets/sop-overview-graphic/sop-overview.png`（HTML 源文件同目录 `sop-overview.html`）。
 
 ## 一、全流程一览
 
