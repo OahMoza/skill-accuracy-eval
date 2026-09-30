@@ -3,7 +3,7 @@
 **结果导向的 Skill 准确性评测**（临时替代品）：评测一个 Skill（技能）的准确性，只看最终结果、不看轨迹。
 
 - 一线喂入业务资料（技能说明 / 业务规则 / 用户问题样例 / 禁止行为）→ 自动生成「被测版本 / 用例集 / 金标准」三件套草稿 → 确认后执行评测。
-- 按「结果正确性 / 规则与边界 / 可靠与兜底」三维度逐条判定 `pass / fail / not_evaluated`，只出分数 + 证据，不判生死。
+- 按「结果正确性 / 规则与边界 / 可靠与兜底」三维度逐条判定 `pass / fail / not_evaluated`，只出分数 + 证据，不裁决。
 - 完全自包含：不依赖任何评测平台、执行引擎或日志系统。SKILL.md 为标准 frontmatter 格式（name + description），支持 Agent Skills 的智能体均可直接识别。
 
 > 定位：在一线暂不具备正式评测平台时使用；不取代正式评测实现。
@@ -45,6 +45,7 @@ npx skills add OahMoza/skill-accuracy-eval --list
 ```bash
 # 复制到豆包技能根目录（Windows 示例）
 npx --yes github:OahMoza/skill-accuracy-eval --dir "C:\Users\<you>\AppData\Local\Doubao\User Data\<profile>\.doubao\agent_mode\workspace\.user_skills"
+
 ```
 
 或直接把仓库的 `SKILL.md` + `references/` + `assets/` 复制到你的技能目录。
