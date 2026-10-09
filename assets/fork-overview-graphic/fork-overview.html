@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="zh-CN" style="margin:0;padding:0;">
+<head>
+<meta charset="UTF-8">
+<title>从通用评测技能到业务专用评测技能（fork 机制）</title>
+<style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    font-family: "Source Han Sans SC", "Microsoft YaHei", "PingFang SC", sans-serif;
+    background: #FFF9E6; /* FT 报纸底 */
+    color: #1a1a1a;
+    width: 1440px; height: 900px; overflow:hidden;
+    padding: 40px 56px 28px;
+    display:flex; flex-direction:column;
+  }
+  .masthead { border-bottom: 3px solid #1a1a1a; padding-bottom: 14px; }
+  .kicker { font-size: 12px; letter-spacing: 2px; color:#8a8a8a; text-transform:uppercase; margin-bottom:6px; }
+  .title { font-size: 30px; font-weight: 800; line-height:1.25; }
+  .title .accent { color:#C03A2B; } /* FT 粉橘 */
+  .deckline { font-size: 13.5px; color:#555; margin-top:8px; line-height:1.5; }
+  .deckline b { color:#1a1a1a; }
+
+  .flow { margin-top: 26px; }
+  .flow-label { font-size: 12px; letter-spacing:1px; color:#8a8a8a; text-transform:uppercase; margin-bottom:10px; }
+  .flow-band { display:flex; align-items:stretch; gap:0; }
+  .node {
+    flex:1; min-height: 118px; border:1px solid #1a1a1a; background:#fff;
+    padding:14px 14px 12px; position:relative; display:flex; flex-direction:column;
+  }
+  .node .n-title { font-size:16px; font-weight:800; }
+  .node .n-sub { font-size:12px; color:#8a8a8a; margin-top:2px; }
+  .node .n-body { font-size:12px; color:#333; margin-top:8px; line-height:1.55; }
+  .node .n-body b { color:#C03A2B; }
+  .arrow {
+    width: 40px; display:flex; align-items:center; justify-content:center; flex-shrink:0;
+    color:#C03A2B; font-size:22px; font-weight:800;
+  }
+  .node.kernel { background:#1a1a1a; color:#fff; }
+  .node.kernel .n-sub, .node.kernel .n-body { color:#ccc; }
+  .node.kernel .n-body b { color:#F5B85C; }
+  .node.out { border-width:3px; border-color:#C03A2B; }
+
+  .grid2 { display:grid; grid-template-columns: 1fr 1fr; gap:22px; margin-top:24px; flex:1; }
+  .card { border-top: 4px solid #1a1a1a; }
+  .card h3 { font-size:14px; font-weight:800; margin:8px 0 10px; }
+  .card h3 .tag { display:inline-block; font-size:11px; padding:2px 8px; margin-right:8px; color:#fff; background:#C03A2B; border-radius:2px; }
+  .card table { width:100%; border-collapse:collapse; font-size:12px; }
+  .card td { border-bottom:1px solid #e8e0c8; padding:7px 4px; vertical-align:top; line-height:1.5; }
+  .card td:first-child { width:96px; font-weight:700; }
+  .no { color:#C03A2B; }
+  .yes { color:#1a6b3c; }
+
+  .foot { border-top:2px solid #1a1a1a; margin-top:20px; padding-top:8px; display:flex; justify-content:space-between; align-items:center; }
+  .foot .src { font-size:11px; color:#8a8a8a; }
+  .foot .date { font-size:11px; color:#8a8a8a; }
+</style>
+</head>
+<body>
+  <div class="masthead">
+    <div class="kicker">技能 Accuracy Evaluation · Fork Mechanism</div>
+    <div class="title">通用内核只做一次，业务专用评测技能由 <span class="accent">fork + 定制</span> 得到</div>
+    <div class="deckline">内核（三维度 + 七铁律 + S0–S6）不可变条款<b>禁改</b> · 业务侧可定制：<b>验收门槛数值 / 场景样本集·黄金集场景分类（19 子类）/ 黄金集与场景样本集 / 报告措辞</b> · 专用技能声明 <b>base-kernel-version</b> · 内核升级经 diff + 回归后由评测方统一<b>合并上游</b></div>
+  </div>
+
+  <div class="flow">
+    <div class="flow-label">主流程：一次内核 → 各业务分叉 → 发起方使用 → 升级回流</div>
+    <div class="flow-band">
+      <div class="node kernel">
+        <div class="n-title">通用评测内核</div>
+        <div class="n-sub">skill-accuracy-eval · 精简且有效</div>
+        <div class="n-body">三维度框架<br>七条铁律（缺证从严 / 不裁决 / 双源黄金集）<br>S0–S6 流程 · 结果导向（轨迹仅防守性）</div>
+      </div>
+      <div class="arrow">→</div>
+      <div class="node">
+        <div class="n-title">fork 业务分支</div>
+        <div class="n-sub">复制内核 · 声明 base-kernel-version</div>
+        <div class="n-body">业务专家供资料：业务规则 / 黄金集 / 用例样本 / 字段字典<br>评测方改造（发起方不自行改造）</div>
+      </div>
+      <div class="arrow">→</div>
+      <div class="node">
+        <div class="n-title">定制两栏</div>
+        <div class="n-sub">不可变 vs 可定制</div>
+        <div class="n-body"><b>禁改</b>：三维度 / 七铁律 / 结果导向 / 阻断性一票否决<br><b>可定制</b>：验收门槛数值（多人讨论+确认记录）· 场景样本集·黄金集场景分类（19 子类）扩展 · 黄金集来源与场景样本集 · 报告措辞业务化</div>
+      </div>
+      <div class="arrow">→</div>
+      <div class="node out">
+        <div class="n-title">业务专用评测技能</div>
+        <div class="n-sub">如 crm-retail-eval</div>
+        <div class="n-body">强合规业务加 <b>“过程合规”专用维度</b>（轨迹判分）<br>交付发起方使用 · 输出达标判定 + 改进建议</div>
+      </div>
+      <div class="arrow">→</div>
+      <div class="node">
+        <div class="n-title">发起方使用</div>
+        <div class="n-sub">评测对象 = 业务技能</div>
+        <div class="n-body">发起方喂业务资料 → 自动评测<br>未达标 → 评价报告 + 建议 → 员工自行调整业务技能</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid2">
+    <div class="card">
+      <h3><span class="tag">内核条款</span>不可变（fork 禁改）</h3>
+      <table>
+        <tr><td>三维度</td><td>结果正确性 / 规则与边界 / 可靠与兜底 框架不拆不改</td></tr>
+        <tr><td>七条铁律</td><td>缺证从严、不裁决但必给建议、双源黄金集等，逐条继承</td></tr>
+        <tr><td>结果导向</td><td>评分只看最终结果，轨迹仅防守性（可否决、不可授分）</td></tr>
+        <tr><td>阻断性</td><td>阻断性失败 → 整例不通过，一票否决不被平均分抵消</td></tr>
+      </table>
+    </div>
+    <div class="card">
+      <h3><span class="tag" style="background:#1a6b3c;">业务定制</span>可定制（fork 允许）</h3>
+      <table>
+        <tr><td>验收门槛数值</td><td>分维度目标通过率，线下多人讨论 + 确认记录（看结果前签认）</td></tr>
+        <tr><td>场景样本集·黄金集场景分类</td><td>3 大类 19 子类基础上按业务扩展（功能 5 / 非功能 5（含故障降级）/ 对抗 9）；黄金集按分类标注形态分化</td></tr>
+        <tr><td>黄金集与场景样本集</td><td>来源、样本、字段字典随业务更换；无业务黄金集 → 仅契约一致性评测</td></tr>
+        <tr><td>报告措辞</td><td>业务化表述与术语，不改变判定口径</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:20px;">
+    <h3><span class="tag">升级回流</span>内核升级如何回到各业务分支</h3>
+    <table>
+      <tr><td>diff</td><td>内核升级产出改动 diff</td></tr>
+      <tr><td>应用 + 回归</td><td>各业务分支应用 diff，跑回归确认不破坏业务定制</td></tr>
+      <tr><td>合并上游</td><td>由评测方统一执行“合并上游”，防分支碎片化</td></tr>
+    </table>
+  </div>
+
+  <div class="foot">
+    <div class="src">来源：skill-accuracy-eval SKILL.md §十二 fork 为专用评测技能（公开仓库）</div>
+    <div class="date">2026-10-09</div>
+  </div>
+</body>
+</html>
