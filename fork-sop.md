@@ -55,13 +55,13 @@
 
 ### Step 4 · 验收门槛声明（线下多人讨论 + 确认记录）
 - 验收门槛（分维度目标通过率）必须由业务专家 + 评测方 + 运营**线下讨论**确定，填 `threshold-approval-template.md`，**看评测结果前签认，失败后不得改口径**。
-- 含特殊条款：如无法判定上限（默认 >10% 降级）、阻断性一票否决、金额/权限字段零容忍。
+- 含特殊条款：如无法判定上限（上限默认 10%，占比 > 上限时降级）、阻断性一票否决、金额/权限字段零容忍。
 - 无业务黄金集的场景：不做达标判定，声明"仅契约一致性评测"。
 
 ### Step 5 · 构建场景样本集与黄金集
 - 场景样本集 ≥5 条：正常成功 / 边界（缺信息、异常输入）/ 反面（违规、越权请求）；每条用例 = `id / category / subcategory / input / expected_behavior（预期行为方向，非标准答案）/ difficulty`；样本阶段不生成标准答案。
-- **覆盖度清单化**：业务场景逐项枚举 + **场景分类显式勾选（3 大类 19 子类：功能类 5 / 非功能类 5（含故障与降级兜底）/ 对抗类 9）**，**场景样本集与黄金集共用同一套分类**；缺类 → 达标判定自动降级"覆盖不足、仅参考"。
-- **黄金集按分类标注形态分化**：功能类 → 标准输出+依据；边界类 → 行为方向+边界判定依据；对抗类 → 必须拒绝（阻断性）+ 拒绝理由充分性（质量观察项）。
+- **覆盖度清单化**：业务场景逐项枚举 + **场景分类显式勾选（3 大类 19 子类：功能类 5 / 非功能类 5（含故障与降级兜底）/ 对抗类 9）**，**场景样本集与黄金集共用同一套分类** + 维度覆盖适用表（必测 / 观察 / 不适用，确认门冻结）；必测子类缺勾选且未声明不适用 → 对应维度降级"覆盖不足、仅参考"，观察项缺 → 仅提示。
+- **黄金集按分类标注形态分化**：功能类 → 标准输出+依据；边界类 → 行为方向+边界判定依据；对抗类 → 按业务底线界定违规行为（阻断性）+ 拒绝理由充分性（质量观察项；不编造、忽略注入并继续授权任务等合法响应可按条款通过）。
 - **专家点评**：每条黄金集附一句专家点评（解释评分尺度），帮助判定者校准，供报告引用。
 - 黄金集**双源**：业务正确性条款只来自业务资料（不照抄技能步骤）；行为契约类可抽自技能自身声明（标"技能契约"）。
 - 黄金集逐条指回来源，经业务方**书面确认**后锁定（补充资料 ≠ 确认，补后回到确认门）。
@@ -110,7 +110,7 @@
 | 触发 | 确认门锁定过验收门槛声明（多人讨论 + 确认记录）；未声明 → 只出分数与证据 |
 | 判定 | 逐维度 实测通过率 vs 验收门槛 → 达标 / 未达标 + 差距 |
 | 阻断性 | 任一阻断性失败 → 该维度未达标 |
-| 防稀释 | 无法判定占比超声明上限（默认 >10%）→ 降级"覆盖不足、仅参考" |
+| 防稀释 | 无法判定占比 > 声明上限（上限默认 10%）→ 降级"覆盖不足、仅参考" |
 | 禁判 | 无业务黄金集维度 → 禁判（仅契约一致性，报告头尾声明边界） |
 | 差距分类 | 不通过归集到 维度 × 场景分类 × 黄金集条款 |
 | 建议 | 不通过类型 → 建议模板 + AI 润色；不下放行 / 回滚裁决 |
@@ -145,6 +145,7 @@
 
 | 日期 | 版本 | 变更摘要 | 关联文件 |
 |---|---|---|---|
+| 2026-10-09 | v1.5.2 | 独立审核修复（两轮）：过程断言独立证据与缺证口径 + 教学示例模拟事实假设声明；示例计数与差距分类按失败用例重算 + 复跑统计勘误贯通；覆盖降级统一口径（维度覆盖适用表：必测/观察/不适用 + 数值比较/阻断结果/覆盖状态三字段）；对抗响应按业务底线界定全量同步；区分资产兼容复用与运行重评；模板列数与种子示例补齐；install.js 空参数与 flag 守卫并存；gotchas 总数与版本历史对齐；演示声明限定为模拟判定教学示例 | SKILL.md、README.md、package.json、references/evaluation-framework.md、references/execution-flow.md、references/confirmation-gate.md、references/gotchas.md、assets/three-piece-sample.md、assets/sop-overview.md、assets/score-sheet-template.md、assets/threshold-approval-template.md、assets/examples/crm-retail/README.md、assets/examples/crm-retail/three-piece.md、assets/examples/crm-retail/evaluation-report.md、assets/sop-overview-graphic/terms-and-docs.html、cases/crm-retail/quantified-threshold-demo.md、cases/crm-retail/re-run-2026-09-28.md、install.js、fork-sop.md |
 | 2026-10-09 | v1.5.1 | 审计修复：文档头 version 移入 metadata.version；confirmation-gate 悬空引用修正（§7.1→§八）；演示样例版本矛盾统一 v1.5；quantified-threshold-demo 术语迁移（黄金集/阻断性/无法判定/验收门槛）；README cases 归属表述统一 + 目录树补列；terms-and-docs.html 挂引用 + 「一线」残留清除；install.js --dir 缺参守卫；退役 cases/crm-retail 两个 v1.4 旧副本（evaluation-report.md / three-piece-crm.md，被 assets/examples/crm-retail/ 取代） | SKILL.md、README.md、references/confirmation-gate.md、assets/examples/crm-retail/evaluation-report.md、cases/crm-retail/quantified-threshold-demo.md、cases/crm-retail/re-run-2026-09-28.md、assets/sop-overview.md、assets/sop-overview-graphic/terms-and-docs.html、install.js、package.json、fork-sop.md |
 | 2026-10-09 | v1.5 | 评测资产落盘与复用：S0 资产查找前置（复用 / 生成 / 增量三模式）+ 复用确认变体 + 资产只增不改；SKILL.md 治理拆分（资料自检 → input-check.md、确认门 → confirmation-gate.md、执行细则 → execution-flow.md、常见错误 → gotchas.md）；术语统一（金标准 → 黄金集；样本集 / 用例集 → 场景样本集；blocking → 阻断性；一线 → 发起方；门槛 → 验收门槛）；术语与业务侧对齐；喂料清单映射被测技能六要素；S6 决策衔接；对外文档术语中文化 | SKILL.md §3.0/§3.3、references/input-check.md、references/confirmation-gate.md、references/execution-flow.md、references/gotchas.md |
 | 2026-10-08 | v1.4 | 归因拆分防基准污染（skill_behavior / judge_bias / unknown）+ 覆盖盲区提示 + 样本量分级措辞 + 稳定性观测可选增强 | SKILL.md §S3.5/S6/§八、evaluation-framework.md §6.2/§7.1、score-sheet-template.md |

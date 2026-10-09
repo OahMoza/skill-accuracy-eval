@@ -32,7 +32,8 @@ function copyItem(s, d) {
 
 const args = process.argv.slice(2);
 const dirIdx = args.indexOf('--dir');
-if (args.includes('--help') || args.includes('-h') || dirIdx === -1 || dirIdx === args.length - 1 || (args[dirIdx + 1] || '').startsWith('-')) {
+const dirVal = args[dirIdx + 1] || '';
+if (args.includes('--help') || args.includes('-h') || dirIdx === -1 || dirIdx === args.length - 1 || !dirVal.trim() || dirVal.startsWith('-')) {
   console.log('官方推荐（选技能/平台/全局项目/软链）：npx skills add OahMoza/skill-accuracy-eval');
   console.log('本脚本仅兜底官方未覆盖平台（如豆包）：npx github:OahMoza/skill-accuracy-eval --dir <技能根目录>');
   process.exit(0);
