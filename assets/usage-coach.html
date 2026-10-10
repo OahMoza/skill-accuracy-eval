@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>skill-accuracy-eval · 使用教学原型</title>
+<style>
+/* ===================== 基础 / 主题变量 ===================== */
+:root{
+  --theme:#3b5bdb;        /* 主题色：Skill 卡片竖条、芯片激活 */
+  --theme-weak:#e8edfd;
+  --user-bg:#e7f0ff;      /* 用户气泡：浅蓝 */
+  --ai-bg:#ffffff;        /* AI 气泡：白 */
+  --page:#f4f5f7;
+  --ink:#1f2329;
+  --ink-2:#6b7280;
+  --line:#e5e7eb;
+  --card-bg:#F8F9FA;      /* Skill 执行卡片底色（按规范） */
+  --tip-bg:#FFF9E6;       /* 教学 Tip 底色（按规范） */
+  --tip-line:#FFE082;
+  --shadow:0 1px 2px rgba(16,24,40,.06),0 1px 6px rgba(16,24,40,.06);
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0;background:var(--page);color:var(--ink);
+  font-family:"微软雅黑","PingFang SC","Noto Sans CJK SC",system-ui,-apple-system,"Segoe UI",sans-serif;
+  font-size:14px;line-height:1.6;
+}
+.app{max-width:760px;margin:0 auto;min-height:100%;display:flex;flex-direction:column;background:var(--page)}
+
+/* ===================== 1. 顶栏 ===================== */
+.app-head{
+  position:sticky;top:0;z-index:5;background:rgba(255,255,255,.92);backdrop-filter:blur(6px);
+  border-bottom:1px solid var(--line);padding:12px 16px;
+  display:flex;align-items:center;justify-content:space-between;gap:10px;
+}
+.app-title{font-size:15px;font-weight:700}
+.round-badge{
+  font-size:12px;font-weight:700;color:var(--theme);background:var(--theme-weak);
+  border-radius:99px;padding:4px 12px;white-space:nowrap;
+}
+
+/* ===================== 2. 对话流 ===================== */
+.stream{flex:1;padding:18px 16px 8px;overflow-y:auto}
+.turn{display:flex;flex-direction:column;gap:10px;margin-bottom:18px}
+.bubble{
+  max-width:82%;padding:11px 14px;border-radius:12px;font-size:14px;line-height:1.6;
+  white-space:pre-wrap;word-break:break-word;
+}
+.bubble.user{align-self:flex-end;background:var(--user-bg);border-bottom-right-radius:4px}
+.bubble.ai{align-self:flex-start;background:var(--ai-bg);box-shadow:var(--shadow);border-bottom-left-radius:4px}
+.bubble .lead{display:block;font-weight:700;margin-bottom:4px}
+
+/* ===================== 3. ⚙️ Skill 执行卡片 ===================== */
+.skill-card{
+  align-self:flex-start;max-width:88%;width:100%;
+  background:var(--card-bg);border-left:3px solid var(--theme);
+  border-radius:0 8px 8px 0;padding:12px;
+}
+.sc-head{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.sc-name{font-weight:700;font-size:13.5px}
+.sc-status{font-size:12px;font-weight:700;border-radius:99px;padding:2px 9px;background:#e6f4ea;color:#1f7a3d}
+.sc-status.running{background:#fff4e0;color:#a35b00}
+.sc-status.warn{background:#fdeeec;color:#c92a2a}
+.sc-toggle{
+  margin-left:auto;background:none;border:1px solid var(--line);border-radius:6px;
+  color:var(--ink-2);font-size:12px;padding:2px 8px;cursor:pointer;font-family:inherit;
+}
+.sc-body{margin-top:10px;display:grid;gap:6px}
+.sc-body.collapsed{display:none}
+.kv{display:grid;grid-template-columns:96px 1fr;gap:10px;font-size:13px}
+.kv .k{color:var(--ink-2)}
+.kv .v{font-weight:600;word-break:break-word}
+
+/* ===================== 4. 💡 教学 Tip 浮层 ===================== */
+.tip{
+  position:relative;align-self:flex-start;max-width:82%;
+  background:var(--tip-bg);border:1px solid var(--tip-line);border-radius:8px;
+  padding:10px 14px;font-size:13px;color:#6b5410;
+  transition:opacity .22s ease,transform .22s ease;
+}
+.tip::before{ /* 小三角指向上方气泡 */
+  content:"";position:absolute;top:-8px;left:22px;width:0;height:0;
+  border-left:7px solid transparent;border-right:7px solid transparent;border-bottom:8px solid var(--tip-bg);
+}
+.tip .x{
+  position:absolute;top:6px;right:8px;background:none;border:none;cursor:pointer;
+  color:#a9853a;font-size:14px;line-height:1;padding:2px;
+}
+.tip.hide{opacity:0;transform:translateY(-4px)}
+
+/* ===================== 5. 底部输入区 + 引导词芯片 ===================== */
+.composer{
+  position:sticky;bottom:0;background:rgba(255,255,255,.95);backdrop-filter:blur(6px);
+  border-top:1px solid var(--line);padding:10px 16px 14px;
+}
+.chips{
+  display:flex;gap:8px;overflow-x:auto;padding-bottom:8px;
+  scrollbar-width:thin;-webkit-overflow-scrolling:touch;
+}
+.chip{
+  flex:none;border:1px solid #b9c8f5;background:#fff;color:var(--theme);
+  border-radius:99px;padding:7px 14px;font-size:13px;cursor:pointer;font-family:inherit;white-space:nowrap;
+}
+.chip:hover{background:var(--theme);color:#fff;border-color:var(--theme)}
+.chip:disabled{opacity:.5;cursor:default}
+.input-row{display:flex;gap:8px}
+#input{
+  flex:1;border:1px solid var(--line);border-radius:10px;padding:10px 12px;
+  font:inherit;font-size:14px;background:#fff;color:var(--ink);
+}
+#input:disabled{background:#f3f4f6;color:var(--ink-2)}
+#send{
+  border:none;border-radius:10px;background:var(--theme);color:#fff;
+  font:inherit;font-size:14px;padding:0 18px;cursor:pointer;
+}
+#send:disabled{opacity:.5;cursor:default}
+#hint{color:#c92a2a;font-size:12.5px;min-height:18px;margin:6px 0 0}
+
+/* ===================== 6. 响应式 ===================== */
+@media (max-width:600px){
+  .bubble{max-width:92%}
+  .skill-card{max-width:96%}
+  .tip{max-width:92%}
+  .kv{grid-template-columns:84px 1fr}
+}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- 顶栏 -->
+  <header class="app-head">
+    <div class="app-title">⚙️ skill-accuracy-eval · 使用教学</div>
+    <div class="round-badge" id="round-badge">第 1 / 3 轮 · 黄金样本</div>
+  </header>
+
+  <!-- 对话流 -->
+  <main class="stream" id="stream"></main>
+
+  <!-- 底部：引导词芯片 + 输入框 -->
+  <footer class="composer">
+    <div class="chips" id="chips"></div>
+    <div class="input-row">
+      <input id="input" placeholder="请点击上方引导词体验" disabled autocomplete="off">
+      <button id="send" disabled>发送</button>
+    </div>
+    <p id="hint"></p>
+  </footer>
+
+</div>
+
+<script>
+/* ===================== 教学脚本（三轮：黄金样本 → 追问修正 → 场景迁移） =====================
+   每轮两条引导词：✅ 推荐说法 / ⚠️ 常见说法（用于对比纠错），共用同一轮次推进。
+========================================================================================== */
+const SCRIPT = [
+  /* ---------- 第 1 轮：黄金样本（标准发起） ---------- */
+  {
+    badge: "第 1 / 3 轮 · 黄金样本",
+    options: [
+      {
+        label: "✅ 标准发起：被测技能 + 版本 + 业务资料",
+        userText: "评测一下 retail-crm-service 的准确性：被测版本 v1.3，我把技能说明、退换货业务规则和典型工单发你。",
+        status: "已触发",
+        statusClass: "",
+        params: [
+          ["意图识别", "技能准确性评测"],
+          ["模式判定", "生成模式（未检出落盘资产）"],
+          ["被测对象", "retail-crm-service v1.3（版本待确认）"],
+          ["待抽取", "必须状态 / 禁止状态 / 结构要求"],
+          ["三维度", "结果正确性 · 规则与边界 · 可靠与兜底"]
+        ],
+        reply: "收到。我先做资料自检（格式 + 内容证据 9 项判据），再生成「被测版本 / 场景样本集 / 黄金集」三件套草稿。\n\n草稿要你逐条显式回执确认后才能锁定、才能执行；黄金集每条都必须指回来源（哪份文档、哪条规则）。业务正确性只认业务来源，不会把技能自己写的步骤抄成正确答案。",
+        tip: "一次说全「被测技能 + 版本 + 业务资料」，执行方就不用回头追问。"
+      },
+      {
+        label: "⚠️ 常见说法：帮我看看这个技能好不好用",
+        userText: "帮我看看这个客服技能好不好用。",
+        status: "停在喂料闸门",
+        statusClass: "warn",
+        params: [
+          ["意图识别", "模糊（未识别被测技能 / 版本）"],
+          ["模式判定", "待判定"],
+          ["业务资料", "无 → 抽不出黄金集"],
+          ["风险", "退化为一次性主观体验评价"],
+          ["下一步", "输出待上传清单，不猜测、不代拟"]
+        ],
+        reply: "这句我先不生成。没有被测技能名和版本，也没有业务资料——没有业务来源就抽不出黄金集，硬跑只会产出一份主观点评，而主观体验评价不在本技能的场景内。\n\n至少补三样：技能说明（SKILL.md）、业务规则 / SOP、典型用户问题样例；有禁止行为和字段字典更好。",
+        tip: "缺「被测技能 + 版本 + 业务资料」三样，评测会退化成主观印象——补齐再发起。"
+      }
+    ]
+  },
+  /* ---------- 第 2 轮：追问修正（改版对比口径） ---------- */
+  {
+    badge: "第 2 / 3 轮 · 追问修正",
+    options: [
+      {
+        label: "✅ 追问修正：复用上轮资产 + 只换版本",
+        userText: "补一句：我手上有 v1.2 落盘的场景样本集和黄金集，别重新生成，复用那一份、只换被测版本跑对比。",
+        status: "执行中",
+        statusClass: "running",
+        params: [
+          ["模式切换", "生成模式 → 复用模式"],
+          ["加载资产", "场景样本集-v1.2.md + 黄金集-v1.2.md"],
+          ["变更变量", "仅被测版本 v1.2 → v1.3"],
+          ["核对项", "资产版本 + 本次用途"],
+          ["跳过", "喂料、三件套生成、逐条确认"]
+        ],
+        reply: "改走复用模式：跳过喂料与生成，只核版本与用途，确认覆盖本次评测后直接进确认门做复用确认，然后执行。\n\n对比只换被测版本这一类变量——用例和环境都不动（铁律 7）。结论按「在 v1.2 场景样本集上，v1.3 相比 v1.2 有 N 项退化 / M 项改善」措辞，不扩展解释。",
+        tip: "改版对比的关键词是「复用 + 只换版本」；说出口，才不会两套用例各测一遍。"
+      },
+      {
+        label: "⚠️ 常见说法：给两个版本各出一套新用例",
+        userText: "给 v1.2 和 v1.3 各生成一套新用例，分别测一测再比。",
+        status: "校验未通过",
+        statusClass: "warn",
+        params: [
+          ["模式判定", "生成模式 ×2"],
+          ["风险", "用例不同源 → 尺子变了"],
+          ["违反", "铁律 7：对比只改一类变量"],
+          ["多轮约束", "两轮轮次设置须一致"],
+          ["结果", "两次独立评测，非改版对比"]
+        ],
+        reply: "这样比不出退化：用例变了，尺子就变了，那是两次独立评测，不是改版对比。\n\n改版对比必须复用同一份兼容锁定资产、同环境、只换被测版本；另外改前改后两轮的轮次设置也要一致，否则等于同时改了「被测版本」和「执行稳定性」两类变量。",
+        tip: "看到「各出一套新用例」就知道错了——对比只改一类变量。"
+      }
+    ]
+  },
+  /* ---------- 第 3 轮：场景迁移（上线验收 + 验收门槛） ---------- */
+  {
+    badge: "第 3 / 3 轮 · 场景迁移",
+    options: [
+      {
+        label: "✅ 场景迁移：上线验收 + 95% 门槛",
+        userText: "那这次是上线验收，产品要求结果正确性 ≥95%，把门槛写进去。",
+        status: "已触发",
+        statusClass: "",
+        params: [
+          ["新增声明", "分维度验收门槛"],
+          ["维度", "结果正确性"],
+          ["目标值", "≥ 95%"],
+          ["前置条件", "线下多人讨论 + 确认记录"],
+          ["冻结声明", "看结果前签认、失败后不得改口径"]
+        ],
+        reply: "门槛随确认门一起锁定：须线下多人讨论并留确认记录，冻结声明是「看结果前签认、失败后不得改口径」。\n\n签认后我输出「实测通过率 vs 门槛 → 达标 / 未达标 + 差距」，附差距分类与改进建议。另两个维度（规则与边界 / 可靠与兜底）你没定门槛，就只出分数与证据。\n\n提醒：这条不通过只指向「怎么改」，不替你决定保留还是回滚——放行永远是人的决策。",
+        tip: "迁移公式 = 场景（上线验收）+ 门槛数值（≥95%）+ 签认状态（看结果前锁定）。"
+      },
+      {
+        label: "⚠️ 常见说法：先跑完再定门槛合不合适",
+        userText: "先跑完看看实际多少分，再定 95% 合不合适。",
+        status: "门槛无效",
+        statusClass: "warn",
+        params: [
+          ["门槛状态", "未签认（看结果后回定）"],
+          ["违反", "失败后不得改口径"],
+          ["达标判定", "作废"],
+          ["本轮输出", "仅分数 + 证据"],
+          ["正确顺序", "先签认 → 再评测"]
+        ],
+        reply: "顺序反了：门槛必须在看结果之前声明并签认。失败后改口径，达标判定直接作废。\n\n这轮我只能出分数与证据，不能判达标；未声明验收门槛的轮次，报告里不会出现「达标 / 未达标」字样。",
+        tip: "门槛先签认、后看结果；事后定口径等于没定。"
+      }
+    ]
+  }
+];
+
+/* ---------- 三轮结束后的开放引导词（自由输入同步开放） ---------- */
+const OPEN = {
+  badge: "教学完成 · 自由输入",
+  options: [
+    {
+      label: "改完 v1.3 再跑一轮",
+      userText: "按建议改完 v1.3，再跑一轮对比。",
+      status: "已触发",
+      statusClass: "",
+      params: [["模式", "复用模式"], ["资产", "v1.2 锁定资产（不重新生成）"], ["变更变量", "仅被测版本"], ["轮次", "与前一轮设置一致"]],
+      reply: "改完只换版本再跑一轮：复用同一份资产、同环境、同轮次设置，输出逐用例的退化 / 改善 / 持平差异。对比结果交给你做放行决策。",
+      tip: "改版重评 = 复用资产 + 只换版本 + 轮次一致，三件事一起说。"
+    },
+    {
+      label: "这次只出分数，不定门槛",
+      userText: "这次不定门槛，只出分数和证据。",
+      status: "已触发",
+      statusClass: "",
+      params: [["门槛状态", "未声明"], ["达标判定", "不输出"], ["输出", "逐用例判定 + 维度通过率"], ["措辞", "不出现达标 / 未达标"]],
+      reply: "本轮不声明验收门槛：只出逐用例判定（通过 / 不通过 / 无法判定）+ 证据 + 维度通过率，不做达标判定，报告里不出现「达标 / 未达标」。",
+      tip: "没门槛就直说「只出分数」——没声明却判达标是作废级错误。"
+    },
+    {
+      label: "看完整对话与 9 个分叉",
+      userText: "完整对话和分叉在哪里看？",
+      status: "已触发",
+      statusClass: "",
+      params: [["主线", "13 轮完整对话"], ["分叉", "F1–F9 共 9 个决策点"], ["文件", "assets/usage-playbook.md"], ["形式", "对话 + mermaid 分叉图 + 分叉表"]],
+      reply: "看 `assets/usage-playbook.md`：13 轮主线对话（复用 + 对比 + 验收门槛这一条完整链路）+ 9 个分叉点的判断依据、分支台词与落点。本原型只演示三轮教学。",
+      tip: "原型练的是「第一句话怎么说」，剧本讲「整条链路怎么走」。"
+    }
+  ]
+};
+
+/* ===================== 运行时 ===================== */
+const $ = id => document.getElementById(id);
+const stream = $('stream'), chipsBox = $('chips'), input = $('input'), sendBtn = $('send'),
+      hint = $('hint'), badge = $('round-badge');
+
+let round = 0;    // 0..2 教学轮；3 = 已开放
+let busy = false;
+const wait = ms => new Promise(r => setTimeout(r, ms));
+
+/* ---- 组件：用户 / AI 气泡 ---- */
+function addBubble(who, text){
+  const turn = document.createElement('div');
+  turn.className = 'turn';
+  const b = document.createElement('div');
+  b.className = 'bubble ' + who;
+  b.textContent = text;
+  turn.appendChild(b);
+  stream.appendChild(turn);
+  stream.scrollTop = stream.scrollHeight;
+  return { turn, bubble: b };
+}
+
+/* ---- 组件：⚙️ Skill 执行卡片 ---- */
+function addSkillCard(opt){
+  const turn = document.createElement('div');
+  turn.className = 'turn';
+  const card = document.createElement('div');
+  card.className = 'skill-card';
+
+  const head = document.createElement('div');
+  head.className = 'sc-head';
+  head.innerHTML = '<span class="sc-emoji">⚙️</span><span class="sc-name">skill-accuracy-eval</span>';
+  const st = document.createElement('span');
+  st.className = 'sc-status ' + (opt.statusClass || '');
+  st.textContent = (opt.statusClass === 'warn' ? '⚠️ ' : opt.statusClass === 'running' ? '🔄 ' : '✅ ') + opt.status;
+  head.appendChild(st);
+  const toggle = document.createElement('button');
+  toggle.className = 'sc-toggle'; toggle.type = 'button'; toggle.textContent = '收起';
+  head.appendChild(toggle);
+
+  const body = document.createElement('div');
+  body.className = 'sc-body';
+  opt.params.forEach(([k, v]) => {
+    const row = document.createElement('div');
+    row.className = 'kv';
+    const kk = document.createElement('span'); kk.className = 'k'; kk.textContent = k;
+    const vv = document.createElement('span'); vv.className = 'v'; vv.textContent = v;
+    row.append(kk, vv);
+    body.appendChild(row);
+  });
+  toggle.addEventListener('click', () => {
+    const hidden = body.classList.toggle('collapsed');
+    toggle.textContent = hidden ? '展开' : '收起';
+  });
+
+  card.append(head, body);
+  turn.appendChild(card);
+  stream.appendChild(turn);
+  stream.scrollTop = stream.scrollHeight;
+}
+
+/* ---- 组件：💡 教学 Tip（附在 AI 气泡下，带小三角 + × 关闭淡出） ---- */
+function addTip(turn, text){
+  const tip = document.createElement('div');
+  tip.className = 'tip';
+  const body = document.createElement('span');
+  body.textContent = '💡 ' + text;
+  const x = document.createElement('button');
+  x.className = 'x'; x.type = 'button'; x.title = '关闭'; x.textContent = '×';
+  x.addEventListener('click', () => {
+    tip.classList.add('hide');
+    setTimeout(() => tip.remove(), 240);
+  });
+  tip.append(body, x);
+  turn.appendChild(tip);
+  stream.scrollTop = stream.scrollHeight;
+}
+
+/* ---- 组件：Suggested Prompts 引导词芯片 ---- */
+function renderChips(block){
+  chipsBox.innerHTML = '';
+  block.options.forEach(opt => {
+    const c = document.createElement('button');
+    c.className = 'chip'; c.type = 'button'; c.textContent = opt.label;
+    c.addEventListener('click', () => run(opt));
+    chipsBox.appendChild(c);
+  });
+  badge.textContent = block.badge;
+}
+
+function setChipsEnabled(on){
+  [...chipsBox.children].forEach(c => c.disabled = !on);
+}
+
+/* ---- 交互时序：用户气泡 → 600ms → Skill 卡片 → 800ms → AI 回复 + Tip → 推进 ---- */
+async function run(opt){
+  if (busy) return;
+  busy = true; setChipsEnabled(false); hint.textContent = '';
+  addBubble('user', opt.userText);
+  await wait(600);
+  addSkillCard(opt);
+  await wait(800);
+  const { turn } = addBubble('ai', opt.reply);
+  addTip(turn, opt.tip);
+  advance();
+  setChipsEnabled(true);
+  busy = false;
+}
+
+function advance(){
+  if (round < SCRIPT.length){ round++; }
+  if (round < SCRIPT.length){
+    renderChips(SCRIPT[round]);
+  } else {
+    renderChips(OPEN);
+    input.disabled = false; sendBtn.disabled = false;
+    input.placeholder = '自由输入：试试「场景 + 被测版本 + 你要的结论」';
+    hint.textContent = '三轮教学完成，输入已开放。';
+  }
+}
+
+/* ---- 手动发送：教学阶段拦下，开放后自由输入 ---- */
+function sendManual(){
+  const text = input.value.trim();
+  if (round < SCRIPT.length){
+    hint.textContent = '教学阶段请点击上方引导词体验（还有 ' + (SCRIPT.length - round) + ' 轮）。';
+    return;
+  }
+  if (!text){ hint.textContent = '先写一句话再发送。'; return; }
+  input.value = '';
+  addBubble('user', text);
+  setTimeout(() => {
+    const { turn } = addBubble('ai',
+      '这句在本原型里没有预设脚本（原型只演示三轮教学）。\n\n真实发起时按这个顺序说：场景（自评 / 改版对比 / 上线验收）+ 被测技能与版本 + 你手上有没有业务资料 / 落盘资产 + 要不要定门槛。完整链路与 9 个分叉见 assets/usage-playbook.md。');
+    addTip(turn, '第一句话 = 场景 + 被测版本 + 你要的结论；有资产就补「复用」，要放行就补「门槛」。');
+  }, 700);
+}
+sendBtn.addEventListener('click', sendManual);
+input.addEventListener('keydown', e => { if (e.key === 'Enter') sendManual(); });
+
+/* ---- 初始化：欢迎语 + 第一轮引导词 ---- */
+(function init(){
+  const { turn } = addBubble('ai',
+    '这是 skill-accuracy-eval 的使用教学，三轮走完你就会用：\n\n① 黄金样本——标准发起一次评测\n② 追问修正——改版对比该怎么说才不跑偏\n③ 场景迁移——换成上线验收 + 验收门槛\n\n点击上方引导词即可发送，不用打字。');
+  addTip(turn, '三轮结构：黄金样本 → 追问修正 → 场景迁移；每条 AI 回复下方都有本轮重点。');
+  renderChips(SCRIPT[0]);
+})();
+</script>
+</body>
+</html>
