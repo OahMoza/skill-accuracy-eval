@@ -1,0 +1,4 @@
+# Runtime artifacts are retained locally, never versioned.
+__pycache__/
+*.py[cod]
+/%SystemDrive%/

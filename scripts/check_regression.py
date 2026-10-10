@@ -319,7 +319,7 @@ CHECKS = [
 ]
 
 COPY_ITEMS = ["SKILL.md", "README.md", "package.json", "install.js", "fork-sop.md",
-              "references", "assets", "cases/crm-retail", "docs"]
+              "references", "assets", "cases", "docs"]  # 复制整个 cases：仅保证 README 引用的文件存在；检查仍按 _skipped 排除 herdr-local-pilot
 
 TAMPERS = [
     ("示例汇总数被篡改（规则与边界 3/3 → 2/4）",
@@ -367,7 +367,7 @@ def run_selftest():
         for item in COPY_ITEMS:
             src, dst = REPO_ROOT / item, tmp / item
             if src.is_dir():
-                shutil.copytree(src, dst)
+                shutil.copytree(src, dst, ignore=shutil.ignore_patterns("__pycache__"))
             elif src.exists():
                 shutil.copy2(src, dst)
         # 基线：未篡改副本必须全绿（否则检查器或仓库本身有回归）

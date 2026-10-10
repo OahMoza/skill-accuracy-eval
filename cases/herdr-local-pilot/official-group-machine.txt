@@ -1,0 +1,16 @@
+Usage:
+  herdr machine list [--json]
+  herdr machine status [<label-or-id>] [--json]
+  herdr machine reconnect <label-or-id>
+  herdr machine add <ssh-target> [--label <label>] [--remote-session <name>]
+  herdr machine rename <profile-id> --label <label>
+  herdr machine remove <profile-id>
+  herdr machine enable <profile-id>
+  herdr machine disable <profile-id>
+
+Add prepares the remote Herdr installation and starts its server before saving.
+Missing or incompatible installations require approval in an interactive terminal.
+Changes apply automatically to open local Herdr clients.
+Removing or disabling a machine leaves its remote sessions running.
+Saved machines contain only a label, SSH target, explicit Herdr session, and enabled state.
+SSH credentials and key material remain owned by OpenSSH.
