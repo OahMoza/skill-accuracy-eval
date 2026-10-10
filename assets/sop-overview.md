@@ -1,7 +1,7 @@
 # SOP 总览（skill-accuracy-eval）
 
-> 本文件是评测技能的完整操作流程（SOP）速查版，与 SKILL.md / evaluation-framework.md 共用同一套结论、范围和纪律；角色分离、缺证从严、双源黄金集均为硬约束。
->
+> 本文件是评测技能的完整操作流程（SOP）**速查摘要（非事实源）**，与 SKILL.md / references 共用同一套结论、范围和纪律；角色分离、缺证从严、双源黄金集均为硬约束。
+> 各主题权威源：判定与覆盖细则 → `references/evaluation-framework.md`；执行细则 → `references/execution-flow.md`；确认门与评测资产 → `references/confirmation-gate.md`；资料自检 → `references/input-check.md`；常见错误 → `references/gotchas.md`；fork 治理 → `fork-sop.md`；术语与全资料速查 → `assets/sop-overview-graphic/terms-and-docs.html`。速查与权威源冲突时以权威源为准；本页随内核版本同步（当前 v1.5.3）。
 > 配套视觉图（一屏速览）：`assets/sop-overview-graphic/sop-overview.png`（HTML 源文件同目录 `sop-overview.html`）。术语与完整资料参考页：同目录 `terms-and-docs.html`（v1.5 术语统一 + 全资料速查）。
 
 ## 一、全流程一览

@@ -74,6 +74,8 @@ skill-accuracy-eval/
 │       ├── three-piece.md       # 三件套演示版
 │       └── evaluation-report.md # 评测记录演示版
 ├── fork-sop.md                  # 通用内核 → 业务专用评测技能的 fork SOP（维护文档，供智能体/评测方优化使用；不随 npx 分发）
+├── docs/                        # 仓库维护说明（maintenance.md）；不随 npx 分发
+├── scripts/                     # 仓库回归检查（check_regression.py + check_installer.js）；维护工具，不属于被测技能执行依赖，不随 npx 分发
 ├── cases/crm-retail/            # 案例（保留在仓库的演示与回归样本）
 │   ├── re-run-2026-09-28.md     # 复跑验证记录（演示样例文本可复现，非真实业务复现）
 │   └── quantified-threshold-demo.md # 新机制演示：验收门槛声明 + 达标判定 + 差距分类 + 建议
@@ -90,6 +92,14 @@ skill-accuracy-eval/
 3. **S1–S6**：锁定 → 真实环境执行（只采最终结果）→ 三维度判定（缺证从严）→ 按维度汇总通过率 + 达标判定（有验收门槛时）+ 差距分类 + 改进建议 → 复核 → 输出评测记录 + 版本锁定 + 边界说明。
 
 完整方法论见 `SKILL.md`；完整跑通案例见 `assets/examples/crm-retail/README.md`。
+
+## 仓库维护（维护者用）
+
+- 回归检查：`npm run check`（等价 `python scripts/check_regression.py`），覆盖五项——frontmatter 真实 YAML 解析与三处版本同步、markdown 表格列数、CRM 逐例汇总与报告 / 量化演示 / 复跑勘误对账、安装器 5 组边界（Node vm 假 fs，不真实安装）、文件与章节引用存在性；任一项失败退出码非零。
+- 自检：`python scripts/check_regression.py --selftest`——在临时目录副本上故意篡改示例汇总数 / 模板列 / 安装守卫，验证入口能捕捉关键回归；不改真实文件、不提交临时目录。
+- 依赖（维护者自备，不自动安装）：Python 3.8+、PyYAML、Node ≥ 14。
+- **检查工具属于仓库维护，不属于被测技能执行依赖**：`npm run check` 仅限仓库内使用；`package.json` `files` 白名单不含 `scripts/` 与 `docs/`，npm 包不随技能分发。
+- 限度：文本级回归检查，不是语义审计或正式评测的替代；事实源治理与各主题权威源映射见 `docs/maintenance.md`。
 
 ## 注意
 
