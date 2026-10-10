@@ -1,7 +1,7 @@
 # 从通用评测技能到业务专用评测技能 · SOP
 
 > **读者**：智能体（评测方角色）。本文档是「把通用评测技能（skill-accuracy-eval）fork 成某业务专用评测技能」的**可执行操作手册**，也是后续迭代维护的事实基准。
-> **配套**：通用内核定义见 `SKILL.md` §十二；验收门槛确认记录见 `assets/threshold-approval-template.md`；打分表见 `assets/score-sheet-template.md`；量化达标演示见 `cases/crm-retail/quantified-threshold-demo.md`；可视化见 `assets/fork-overview-graphic/`。
+> **配套**：通用内核定义见 `skills/skill-accuracy-eval/SKILL.md` §十二；验收门槛确认记录见 `skills/skill-accuracy-eval/assets/threshold-approval-template.md`；打分表见 `skills/skill-accuracy-eval/assets/score-sheet-template.md`；量化达标演示见 `cases/crm-retail/quantified-threshold-demo.md`；可视化见 `guides/fork-overview-graphic/`。
 > **版本**：本文档随内核版本演进维护，每次改动在文末登记。
 
 ---
@@ -145,6 +145,7 @@
 
 | 日期 | 版本 | 变更摘要 | 关联文件 |
 |---|---|---|---|
+| 2026-10-10 | v1.5.13 | 仓库结构调整（对齐 Agent Skills 标准）：skill 本体移入 `skills/skill-accuracy-eval/`（SKILL.md + references + assets），给人看的指南与可视化移入仓库根 `guides/`（usage-playbook / usage-coach / fork-overview-graphic），sop-overview-graphic 保留在 skill assets（与 sop-overview 速查配套）；install.js 指向新路径、package.json files 白名单改为 skills、check_regression.py 路径与 name 校验同步；判定口径、数字、机制不变 | SKILL.md、package.json、install.js、fork-sop.md、README.md、docs/maintenance.md、scripts/check_regression.py、guides/、skills/ |
 | 2026-10-10 | v1.5.12 | 使用剧本与资产复用增强：新增 assets/usage-playbook.md（13 轮完整对话 + 9 个分叉点，与演示样例分工——样例看产物、剧本看对话）；复用模式明确「手上有资产文件即上传复用」+ 复用/重生成「判别一句」；复用确认新增接口契约变化判据（入参调整判据）与原黄金集确认记录随附要求；锁定即落盘为必做步骤（未落盘=未锁定）；score-sheet 复核清单定位 S5 工作待办 + 新增落盘检查项，报告模板 §七改为已完成复核记录 | SKILL.md、package.json、fork-sop.md、README.md、references/confirmation-gate.md、references/execution-flow.md、assets/usage-playbook.md、assets/score-sheet-template.md、assets/three-piece-sample.md、assets/evaluation-report-template.md、assets/sop-overview-graphic/terms-and-docs.html |
 | 2026-10-10 | v1.5.11 | 产物形态分层：执行期 md / 交付期 doc·xlsx；三类签认记录（黄金集确认 / 复用确认 / 验收门槛）统一 doc；交付态由 agent 按 md 模板现场生成，二进制不进仓库 | SKILL.md、package.json、fork-sop.md、docs/maintenance.md、README.md、assets/examples/crm-retail/README.md、assets/sop-overview.md、assets/sop-overview-graphic/terms-and-docs.html |
 | 2026-10-10 | v1.5.10 | 第二轮全项目润色：演示样例与案例（examples / cases）纳入引号「」统一与装饰性 em dash 清理；v1.5.7–1.5.9 新增文字补齐直角引号与常规标点（修正「卖的是成本」→「付的是成本」、删「换言之」过渡词）；HTML 速查页文本节点引号统一（PNG 内容未变不重渲）；direction-approved 决策留痕按原样保留；判定口径、数字、机制与章节编号不变 | SKILL.md、package.json、fork-sop.md、docs/maintenance.md、references/execution-flow.md、references/evaluation-framework.md、assets/evaluation-report-template.md、assets/examples/crm-retail/、assets/sop-overview.md、assets/sop-overview-graphic/sop-overview.html、assets/sop-overview-graphic/terms-and-docs.html、cases/crm-retail/ |

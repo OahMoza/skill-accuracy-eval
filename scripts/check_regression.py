@@ -69,8 +69,8 @@ def unescaped_pipes(line):
 
 def check_frontmatter(root):
     root = Path(root)
-    errs = []
-    skill = (root / "SKILL.md").read_text(encoding="utf-8")
+    skill_dir = root / "skills" / "skill-accuracy-eval"
+    skill = (skill_dir / "SKILL.md").read_text(encoding="utf-8")
     m = re.match(r"^---\n(.*?)\n---\n", skill, re.S)
     if not m:
         return ["SKILL.md frontmatter 未找到（--- 包裹缺失）"]
@@ -80,6 +80,7 @@ def check_frontmatter(root):
         return [f"frontmatter YAML 解析失败: {e}"]
     if not isinstance(fm, dict):
         return ["frontmatter 解析结果不是映射"]
+    errs = []
     if "version" in fm:
         errs.append("顶层 version 字段应在 metadata 下（metadata.version）")
     name = fm.get("name")
@@ -87,8 +88,8 @@ def check_frontmatter(root):
         errs.append(f"name 不合规: {name!r}")
     elif len(name) > 64:
         errs.append(f"name 超长: {len(name)} > 64")
-    elif name != root.name:
-        errs.append(f"name ({name}) 与目录名 ({root.name}) 不一致")
+    elif name != skill_dir.name:
+        errs.append(f"name ({name}) 与 skill 目录名 ({skill_dir.name}) 不一致")
     desc = fm.get("description")
     if not isinstance(desc, str) or not desc:
         errs.append("description 缺失或为空")
@@ -144,7 +145,7 @@ def check_tables(root):
 # ---------- 3. CRM 逐例汇总对账 ----------
 
 def _crm_computed(root):
-    report = Path(root) / "assets/examples/crm-retail/evaluation-report.md"
+    report = Path(root) / "skills/skill-accuracy-eval/assets/examples/crm-retail/evaluation-report.md"
     computed = {d: {"通过": 0, "不通过": 0, "无法判定": 0} for d in DIMS}
     cases = 0
     for block in re.split(r"^### crm-", report.read_text(encoding="utf-8"), flags=re.M)[1:]:
@@ -165,7 +166,7 @@ def check_crm(root):
     if cases != 6:
         errs.append(f"逐例解析到 {cases} 例（期望 6）")
     docs = {
-        "report": Path(root) / "assets/examples/crm-retail/evaluation-report.md",
+        "report": Path(root) / "skills/skill-accuracy-eval/assets/examples/crm-retail/evaluation-report.md",
         "demo": Path(root) / "cases/crm-retail/quantified-threshold-demo.md",
         "rerun": Path(root) / "cases/crm-retail/re-run-2026-09-28.md",
     }
@@ -268,13 +269,20 @@ def check_references(root):
         for line, fence in lines_with_fence(path):
             if fence:
                 continue
-            # fork-sop 版本登记表为历史记录：旧章节引用按评审结论保留，不校验（文件引用仍查）
+            # fork-sop 版本登记表为历史记录：旧章节引用与旧文件路径按评审结论保留，不校验
             is_registry_row = re.match(r"^\|\s*\d{4}-\d{2}-\d{2}", line) is not None
             mentions = [(mt.start(), mt.group(0)) for mt in FILE_REF.finditer(line)]
-            # 文件引用存在性：仅检查带仓库目录前缀的引用（外部路径如 tau2-bench 的 data/... 不检查）
-            for _, ref in mentions:
-                if re.match(r"^(references|assets|cases|docs|scripts)/", ref) and not (root / ref).exists():
-                    errs.append(f"{path.name}: 引用文件不存在 {ref}")
+            # 文件引用存在性：仅检查带仓库目录前缀的引用（外部路径如 tau2-bench 的 data/... 不检查）；历史登记行豁免
+            if not is_registry_row:
+                for _, ref in mentions:
+                    if re.match(r"^(references|assets)/", ref):
+                        resolved = root / "skills" / "skill-accuracy-eval" / ref
+                    elif re.match(r"^(cases|docs|scripts)/", ref):
+                        resolved = root / ref
+                    else:
+                        continue
+                    if not resolved.exists():
+                        errs.append(f"{path.name}: 引用文件不存在 {ref}")
             if is_registry_row:
                 continue
             secs = [(mt.start(), mt.group(1)) for mt in SEC_REF.finditer(line)]
@@ -287,7 +295,10 @@ def check_references(root):
                 for mpos, ref in mentions:  # 位置归属：§ 之前最近的 .md 提及
                     if mpos < pos:
                         if "/" in ref:
-                            target = root / ref
+                            if re.match(r"^(references|assets)/", ref):
+                                target = root / "skills" / "skill-accuracy-eval" / ref
+                            else:
+                                target = root / ref
                         else:
                             target = _resolve_bare(root, ref)
                 if target is None:
@@ -313,17 +324,17 @@ CHECKS = [
     ("文件 / 章节引用存在性", check_references),
 ]
 
-COPY_ITEMS = ["SKILL.md", "README.md", "package.json", "install.js", "fork-sop.md",
-              "references", "assets", "cases", "docs"]  # 复制完整案例目录，保证文档引用在临时副本中有效
+COPY_ITEMS = ["skills", "README.md", "package.json", "install.js", "fork-sop.md",
+              "cases", "docs"]  # 复制完整案例目录，保证文档引用在临时副本中有效
 
 TAMPERS = [
     ("示例汇总数被篡改（规则与边界 3/3 → 2/4）",
-     "assets/examples/crm-retail/evaluation-report.md",
+     "skills/skill-accuracy-eval/assets/examples/crm-retail/evaluation-report.md",
      "| 规则与边界 | 3 | 3 | 0 | 50%（3/6） | 3 |",
      "| 规则与边界 | 2 | 4 | 0 | 33%（2/6） | 3 |",
      "CRM 逐例汇总对账"),
     ("模板表格列被删（10 列 → 9 列）",
-     "assets/score-sheet-template.md",
+     "skills/skill-accuracy-eval/assets/score-sheet-template.md",
      "| 结果正确性 | | | | | | | 达标 / 未达标 / 禁判 | 充足 / 覆盖不足、仅参考 | |",
      "| 结果正确性 | | | | | | | 达标 / 未达标 / 禁判 | 充足 / 覆盖不足、仅参考 |",
      "markdown 表格列数"),

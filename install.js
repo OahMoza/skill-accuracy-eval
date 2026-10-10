@@ -12,7 +12,7 @@
 const fs = require('fs');
 const path = require('path');
 
-const SRC = __dirname;
+const SRC = path.join(__dirname, 'skills', 'skill-accuracy-eval');
 const NAME = 'skill-accuracy-eval';
 const ITEMS = ['SKILL.md', 'references', 'assets'];
 

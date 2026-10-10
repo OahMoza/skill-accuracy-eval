@@ -42,7 +42,7 @@ npx skills add OahMoza/skill-accuracy-eval --list
 
 ## 装好之后怎么用
 
-在智能体对话里直接发起，例如「评测一下 xxx 技能」，同时喂入它的技能说明和业务规则；技能会先生成三件套草稿，经你逐条确认后才执行。第一次使用建议先看演示样例 `assets/examples/crm-retail/`，里面有从喂料到评测报告的完整走法；想看「对话怎么走、哪些节点会分叉」看 `assets/usage-playbook.md`，想交互式练「第一句话怎么说」可双击打开 `assets/usage-coach.html`。
+在智能体对话里直接发起，例如「评测一下 xxx 技能」，同时喂入它的技能说明和业务规则；技能会先生成三件套草稿，经你逐条确认后才执行。第一次使用建议先看演示样例 `skills/skill-accuracy-eval/assets/examples/crm-retail/`，里面有从喂料到评测报告的完整走法；想看「对话怎么走、哪些节点会分叉」看 `guides/usage-playbook.md`，想交互式练「第一句话怎么说」可双击打开 `guides/usage-coach.html`。
 
 ## 豆包安装（官方未覆盖，用兜底脚本）
 
@@ -53,33 +53,36 @@ npx skills add OahMoza/skill-accuracy-eval --list
 npx --yes github:OahMoza/skill-accuracy-eval --dir "C:\Users\<you>\AppData\Local\Doubao\User Data\<profile>\.doubao\agent_mode\workspace\.user_skills"
 ```
 
-或直接把仓库的 `SKILL.md` + `references/` + `assets/` 复制到你的技能目录。
+或直接把仓库 `skills/skill-accuracy-eval/` 下的 `SKILL.md` + `references/` + `assets/` 复制到你的技能目录。
 
 ## 目录结构
 
 ```
 skill-accuracy-eval/
-├── SKILL.md                     # 评测方法本体（S0 资产查找 + 三件套生成 + S1–S6 流程 + 七条铁律）· 版本号见文档头
-├── references/
-│   ├── evaluation-framework.md  # 三维度判据 / 判定语义 / 阻断性规则 / S0 操作指南
-│   ├── input-check.md           # 资料自检 9 项判据（S0 喂料后生成前必做）
-│   ├── confirmation-gate.md     # 确认门细则 + 评测资产落盘与复用（v1.5）
-│   ├── execution-flow.md        # S1–S6 执行细则 + 改前改后对比 + 回填升级
-│   └── gotchas.md               # 常见错误 19 条（看到即纠正）
-├── assets/
-│   ├── three-piece-sample.md    # 三件套种子样本（虚构示例，先看结构）
-│   ├── score-sheet-template.md  # 打分表模板
-│   ├── evaluation-report-template.md # 最终评测报告模板（S6 输出，单一事实源）
-│   ├── threshold-approval-template.md # 验收门槛确认记录模板（多人讨论 + 签认 + 冻结声明）
-│   ├── sop-overview.md          # SOP 总览速查（全流程 / 角色 / 铁律 / 覆盖度与黄金集要点）
-│   ├── sop-overview-graphic/    # SOP 一屏速览图（sop-overview.png + HTML 源）+ 术语与完整资料参考页（terms-and-docs.html）
-│   ├── usage-playbook.md        # 使用场景剧本：13 轮完整对话 + 9 个分叉点（对话怎么走、什么时候分叉）
-│   ├── usage-coach.html         # 使用教学原型（单文件：三轮对话 + Skill 执行卡片 + 教学 Tip，双击即用）
-│   ├── fork-overview-graphic/   # fork 机制一屏图（fork-overview.png + HTML 源 + 方向决策记录）
-│   └── examples/crm-retail/     # 流程演示样例：真实测试集（τ²-bench retail）构造的模拟判定教学示例
-│       ├── README.md            # 使用指引（先看）
-│       ├── three-piece.md       # 三件套演示版
-│       └── evaluation-report.md # 评测记录演示版
+├── skills/                       # skill 本体（可分发单元）
+│   └── skill-accuracy-eval/
+│       ├── SKILL.md              # 评测方法本体（S0 资产查找 + 三件套生成 + S1–S6 流程 + 七条铁律）· 版本号见文档头
+│       ├── references/
+│       │   ├── evaluation-framework.md  # 三维度判据 / 判定语义 / 阻断性规则 / S0 操作指南
+│       │   ├── input-check.md           # 资料自检 9 项判据（S0 喂料后生成前必做）
+│       │   ├── confirmation-gate.md     # 确认门细则 + 评测资产落盘与复用（v1.5）
+│       │   ├── execution-flow.md        # S1–S6 执行细则 + 改前改后对比 + 回填升级
+│       │   └── gotchas.md               # 常见错误 19 条（看到即纠正）
+│       └── assets/
+│           ├── three-piece-sample.md    # 三件套种子样本（虚构示例，先看结构）
+│           ├── score-sheet-template.md  # 打分表模板
+│           ├── evaluation-report-template.md # 最终评测报告模板（S6 输出，单一事实源）
+│           ├── threshold-approval-template.md # 验收门槛确认记录模板（多人讨论 + 签认 + 冻结声明）
+│           ├── sop-overview.md          # SOP 总览速查（全流程 / 角色 / 铁律 / 覆盖度与黄金集要点）
+│           ├── sop-overview-graphic/    # SOP 一屏速览图（sop-overview.png + HTML 源）+ 术语与完整资料参考页（terms-and-docs.html）
+│           └── examples/crm-retail/     # 流程演示样例：真实测试集（τ²-bench retail）构造的模拟判定教学示例
+│               ├── README.md            # 使用指引（先看）
+│               ├── three-piece.md       # 三件套演示版
+│               └── evaluation-report.md # 评测记录演示版
+├── guides/                       # 给人看的使用指南与可视化（非 skill 执行文档，不随 skill 分发）
+│   ├── usage-playbook.md         # 使用场景剧本：13 轮完整对话 + 9 个分叉点（对话怎么走、什么时候分叉）
+│   ├── usage-coach.html          # 使用教学原型（单文件：三轮对话 + Skill 执行卡片 + 教学 Tip，双击即用）
+│   └── fork-overview-graphic/    # fork 机制一屏图（fork-overview.png + HTML 源 + 方向决策记录）
 ├── fork-sop.md                  # 通用内核 → 业务专用评测技能的 fork SOP（维护文档，供智能体/评测方优化使用；不随 npx 分发）
 ├── docs/                        # 仓库维护说明（maintenance.md）；不随 npx 分发
 ├── scripts/                     # 仓库回归检查（check_regression.py + check_installer.js）；维护工具，不属于被测技能执行依赖，不随 npx 分发
