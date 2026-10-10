@@ -42,7 +42,7 @@ npx skills add OahMoza/skill-accuracy-eval --list
 
 ## 装好之后怎么用
 
-在智能体对话里直接发起，例如「评测一下 xxx 技能」，同时喂入它的技能说明和业务规则；技能会先生成三件套草稿，经你逐条确认后才执行。第一次使用建议先看演示样例 `assets/examples/crm-retail/`，里面有从喂料到评测报告的完整走法。
+在智能体对话里直接发起，例如「评测一下 xxx 技能」，同时喂入它的技能说明和业务规则；技能会先生成三件套草稿，经你逐条确认后才执行。第一次使用建议先看演示样例 `assets/examples/crm-retail/`，里面有从喂料到评测报告的完整走法；想看「对话怎么走、哪些节点会分叉」，看 `assets/usage-playbook.md`。
 
 ## 豆包安装（官方未覆盖，用兜底脚本）
 
@@ -73,6 +73,7 @@ skill-accuracy-eval/
 │   ├── threshold-approval-template.md # 验收门槛确认记录模板（多人讨论 + 签认 + 冻结声明）
 │   ├── sop-overview.md          # SOP 总览速查（全流程 / 角色 / 铁律 / 覆盖度与黄金集要点）
 │   ├── sop-overview-graphic/    # SOP 一屏速览图（sop-overview.png + HTML 源）+ 术语与完整资料参考页（terms-and-docs.html）
+│   ├── usage-playbook.md        # 使用场景剧本：13 轮完整对话 + 9 个分叉点（对话怎么走、什么时候分叉）
 │   ├── fork-overview-graphic/   # fork 机制一屏图（fork-overview.png + HTML 源 + 方向决策记录）
 │   └── examples/crm-retail/     # 流程演示样例：真实测试集（τ²-bench retail）构造的模拟判定教学示例
 │       ├── README.md            # 使用指引（先看）
