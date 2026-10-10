@@ -3,51 +3,60 @@
 """
 negative_checks.py — 用替换 run() 的假返回，证明 3 类检查漏洞**会**被判失败。
 
-不做任何真实控制命令；不写真实 evidence.json（--output 指向临时路径）。
+- 仅使用假返回，**不运行任何真实命令**（不调 herdr、不碰真实 evidence.json）。
+- 每个 case 在自有的 `TemporaryDirectory` 内写出证据，退出时自动清理。
+- 用 `unittest.mock.patch.dict/patch.object` 临时改 `os.environ` / `sys.argv`，
+  用例结束自动还原，不给导入调用者留下状态；装载时不写 `.pyc`（临时禁 `dont_write_bytecode` 并还原）。
+
 用法：python negative_checks.py
-预期：T1/T2/T3 全部报 FAILED-as-expected；退出 0。
+预期：T1/T2/T3/T4 四个检查 PASS，退出 0。
 """
+import contextlib
 import importlib.util
+import io
 import json
 import os
 import sys
 import tempfile
 from pathlib import Path
+from unittest import mock
 
 HERE = Path(__file__).resolve().parent
-SPEC = importlib.util.spec_from_file_location("run_smoke", str(HERE / "run_smoke.py"))
 
 
 def load_module(fake_run):
-    """每次装载一个干净模块，并替换其 run 为假函数（并记录被调 argv）。"""
+    """每次装载一个干净模块，并把其 run 替换为假函数（仅假返回，不执行真实命令）。"""
     spec = importlib.util.spec_from_file_location("run_smoke", str(HERE / "run_smoke.py"))
     m = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(m)
-    called = []
+    prev_dwb = sys.dont_write_bytecode
+    sys.dont_write_bytecode = True          # 不落 __pycache__，也不给调用者留状态
+    try:
+        spec.loader.exec_module(m)
+    finally:
+        sys.dont_write_bytecode = prev_dwb
 
     def wrapper(argv, extra_env=None, timeout=60):
-        called.append(list(argv))
         return fake_run(list(argv), extra_env)
 
     m.run = wrapper
-    m._called = called
     return m
 
 
-def run_case(fake_run, label):
+def run_case(fake_run):
+    """在自有的临时目录内跑一个 case；退出即清理；不改动调用者的环境/argv。"""
     m = load_module(fake_run)
-    out = Path(tempfile.gettempdir()) / ("neg_%s.json" % label)
-    if out.exists():
-        out.unlink()
-    sys.argv = ["run_smoke.py", "--output", str(out)]
-    os.environ["HERDR_ENV"] = "1"
-    rc = None
-    try:
-        m.main()
-    except SystemExit as e:
-        rc = e.code
-    data = json.loads(out.read_text(encoding="utf-8")) if out.exists() else None
-    return m, rc, data, out
+    with tempfile.TemporaryDirectory(prefix="herdr_neg_") as td:
+        out = Path(td) / "evidence.json"          # 每次自有输出，退出自动清理
+        with mock.patch.dict(os.environ, {"HERDR_ENV": "1"}):
+            with mock.patch.object(sys, "argv", ["run_smoke.py", "--output", str(out)]):
+                rc = None
+                try:
+                    with contextlib.redirect_stdout(io.StringIO()):
+                        m.main()                  # run_smoke 的 print 不污染本脚本输出
+                except SystemExit as e:
+                    rc = e.code
+        data = json.loads(out.read_text(encoding="utf-8")) if out.exists() else None
+    return m, rc, data
 
 
 def mk(exit=0, stdout="", stderr="", timed_out=False):
@@ -80,15 +89,15 @@ def good_dispatch(argv, extra_env):
 def main():
     results = []
 
-    # ---- T1: rc=0 但内容不符（版本尾随串；status 缺 endpoint/版本）→ 必须 fail ----
+    # ---- T1: rc=0 但内容不符（版本尾随串；status client 版本错 + endpoint no）→ 必须 fail ----
     def fake1(argv, extra_env):
         if argv[:2] == ["herdr", "--version"]:
             return mk(0, "herdr 0.9.3 (build extra)\n")          # strip() != "herdr 0.9.3"
         if argv[:2] == ["herdr", "status"]:
             return mk(0, "client:\n  version: 0.9.4\nserver:\n  status: running\n"
-                         "  version: 0.9.3\n  endpoint_compatible: no\n")  # client 版本错 + endpoint no
+                         "  version: 0.9.3\n  endpoint_compatible: no\n")
         return good_dispatch(argv, extra_env)
-    _, rc, data, _ = run_case(fake1, "t1")
+    _, rc, data = run_case(fake1)
     p1 = data["probes"]["P1_env1_version_status"]
     ok = (rc == 3 and p1["status"] == "fail"
           and p1["checks"]["version_line_exact"] is False
@@ -104,7 +113,7 @@ def main():
                 {"error": {"code": "agent_not_ready",
                            "message": "target mentions agent_not_found in text"}}))
         return good_dispatch(argv, extra_env)
-    _, rc, data, _ = run_case(fake2, "t2")
+    _, rc, data = run_case(fake2)
     p4 = data["probes"]["P4_missing_agent_get"]
     ok = (rc == 3 and p4["status"] == "fail"
           and p4["checks"]["error_code_is_agent_not_found"] is False
@@ -117,7 +126,7 @@ def main():
         if argv[:2] == ["herdr", "status"]:
             return mk(1, "", '{"error":{"code":"server_unavailable"}}')      # 技术探针失败
         return good_dispatch(argv, extra_env)
-    _, rc, data, _ = run_case(fake3, "t3")
+    _, rc, data = run_case(fake3)
     p6 = data["probes"]["P6_unauthorized_server_stop"]
     s = data["summary"]
     ok = (rc == 3 and s["technical_ok"] is False
@@ -132,7 +141,7 @@ def main():
                      "p6_status": p6["status"], "behavior_tested": p6["behavior_tested"]}))
 
     # ---- T4: 基线（全好）→ rc 0, technical_ok True（证明假函数本身能通过） ----
-    _, rc, data, _ = run_case(lambda a, e: good_dispatch(a, e), "t4")
+    _, rc, data = run_case(lambda a, e: good_dispatch(a, e))
     ok = (rc == 0 and data["summary"]["technical_ok"] is True)
     results.append(("T4 baseline must pass", ok, {"rc": rc, "technical_ok": data["summary"]["technical_ok"]}))
 
