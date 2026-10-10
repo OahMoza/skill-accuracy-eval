@@ -12,7 +12,7 @@ python scripts/check_regression.py --selftest   # 自检：篡改临时副本证
 - 依赖（维护者自备，不自动安装）：Python 3.8+、PyYAML（`pip install pyyaml`）、Node ≥ 14。
 - 覆盖五项：① frontmatter 真实 YAML 解析 / name-description schema / 三处版本同步；② markdown 表格列数（忽略代码围栏与转义竖线）；③ CRM 逐例三维度重算与报告汇总 / 量化演示 / 复跑勘误对账；④ 安装器 5 组边界（Node vm 假 fs：缺参 / 空串 / 空白 / flag / 合法路径，不真实安装）；⑤ 文件与章节引用存在性（真实解析引用目标）。
 - 自检在 `tempfile` 临时目录副本上故意篡改示例汇总数 / 模板列 / 安装守卫，验证三项关键回归均被捕捉；不改真实文件、不提交临时目录。
-- 限度：**文本级回归检查，不是语义审计，也不是正式评测的替代**；评分政策变更、判定口径修订仍需人工复核（见 `fork-sop.md` §7 与人工评审流程）。
+- 限度：**文本级回归检查，不是语义审计，也不是正式评测的替代**；评分政策变更、判定口径修订仍需人工复核。
 
 ## 事实源治理（最小规则）
 
@@ -20,7 +20,7 @@ python scripts/check_regression.py --selftest   # 自检：篡改临时副本证
 
 | 主题 | 事实源 | 复制版（改动须同步） |
 |---|---|---|
-| 评测角色体系（六角色表 / 分离约束 / 顺序闭环） | `SKILL.md` §五 | `assets/sop-overview.md`、`assets/sop-overview-graphic/terms-and-docs.html`（速查摘要） |
+| 评测角色体系（分层角色表：常驻 / 可选触发 / 干系人 + 分离强度） | `SKILL.md` §五 | `assets/sop-overview.md`、`assets/sop-overview-graphic/terms-and-docs.html`（速查摘要） |
 | 确认门完整动作 / 评测资产落盘复用 | `references/confirmation-gate.md` | `references/evaluation-framework.md` §4.4（仅摘要+引用）、HTML 速查 |
 | 判定细则 / 覆盖口径 / 黄金集规范 / 汇总达标 | `references/evaluation-framework.md` | `SKILL.md` 要点行、`assets/sop-overview.md`、HTML |
 | S1–S6 执行细则 / 对比与回填 | `references/execution-flow.md` | `assets/sop-overview.md`、HTML |
