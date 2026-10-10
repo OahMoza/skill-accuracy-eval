@@ -69,6 +69,7 @@ skill-accuracy-eval/
 ├── assets/
 │   ├── three-piece-sample.md    # 三件套种子样本（虚构示例，先看结构）
 │   ├── score-sheet-template.md  # 打分表模板
+│   ├── evaluation-report-template.md # 最终评测报告模板（S6 输出，单一事实源）
 │   ├── threshold-approval-template.md # 验收门槛确认记录模板（多人讨论 + 签认 + 冻结声明）
 │   ├── sop-overview.md          # SOP 总览速查（全流程 / 角色 / 铁律 / 覆盖度与黄金集要点）
 │   ├── sop-overview-graphic/    # SOP 一屏速览图（sop-overview.png + HTML 源）+ 术语与完整资料参考页（terms-and-docs.html）
@@ -87,13 +88,15 @@ skill-accuracy-eval/
 └── install.js                   # 兜底安装脚本（官方 npx skills 未覆盖的平台，如豆包）
 ```
 
+> 产物形态：`assets/` 下模板均为 md，是**执行期**工作格式，也是交付态 doc/xlsx 的字段契约；交付期由 agent 按模板现场生成 doc/xlsx（报告 → doc、打分表 → xlsx、签认记录 → doc），二进制不进仓库。分层见 `SKILL.md` §九「产物形态分层」。
+>
 > 版本同步约定：SKILL.md 文档头 `metadata.version` / `package.json` version / fork-sop.md 版本表三处保持一致，任一机制变更三处同改。
 
 ## 使用流程（摘要）
 
 1. **S0 资产查找**：先查是否已有本被测技能的锁定评测资产：有且覆盖本次 → 复用模式（加载锁定资产，跳过喂料与生成）；无 → 生成模式（喂料 → 生成三件套草稿 → 锁定后落盘为资产）；需补用例 → 增量模式（加载既有资产，只对新增/回填用例走确认）。
 2. **确认门**：黄金集逐条指回来源后锁定；确认不了标 `待确认`，缺资料不进入执行；可一并声明分维度验收门槛（多人讨论 + 确认记录）与版本字段（业务资料 / 黄金集 / 运行环境 / 有效期）。
-3. **S1–S6**：锁定 → 真实环境执行（只采最终结果）→ 三维度判定（缺证从严）→ 按维度汇总通过率 + 达标判定（有验收门槛时）+ 差距分类 + 改进建议 → 复核 → 输出评测记录 + 版本锁定 + 边界说明。
+3. **S1–S6**：锁定 → 真实环境执行（只采最终结果）→ 三维度判定（缺证从严）→ 按维度汇总通过率 + 达标判定（有验收门槛时）+ 差距分类 + 改进建议 → 复核 → 输出评测记录 + 版本锁定 + 边界说明。产物**执行期均为 md**（可 diff、可加载）；交付期按需转成品格式：评测报告转 doc、打分表转 xlsx、签认记录转 doc（见 `SKILL.md` §九「产物形态分层」）。
 
 完整方法论见 `SKILL.md`；模拟判定教学样例见 `assets/examples/crm-retail/README.md`。
 

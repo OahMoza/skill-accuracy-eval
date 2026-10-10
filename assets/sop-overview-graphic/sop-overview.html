@@ -82,7 +82,7 @@
   <div class="masthead">
     <div class="kicker">技能 Accuracy Evaluation · Operating Procedure</div>
     <h1>结论先说：一套「结果导向」的技能准确性评测 SOP<br>评分只看最终结果；轨迹仅防守性参考；<span class="accent">先锁定三件套，再执行判定</span></h1>
-    <div class="deckline">判定只看 <b>最终答复 / 交付物 / 关键行为结果</b>（盲评不看轨迹）· 轨迹仅<b>防守性</b>：存疑时核验对账，<b>只可否决、不可授分</b> · 按 <b>三维度</b> 逐条通过 / 不通过 / 无法判定 · 可声明<b>分维度验收门槛</b> → 输出<b>达标判定 + 改进建议</b> · <b>角色分离</b>（多主体硬约束 / 单 agent 降级） · 缺证从严 · 版本锁定 · 不裁决但必给建议</div>
+    <div class="deckline">判定只看 <b>最终答复 / 交付物 / 关键行为结果</b>（盲评不看轨迹）· 轨迹仅<b>防守性</b>：存疑时核验对账，<b>只可否决、不可授分</b> · 按 <b>三维度</b> 逐条通过 / 不通过 / 无法判定 · 可声明<b>分维度验收门槛</b> → 输出<b>达标判定 + 改进建议</b> · <b>角色分离</b>（多主体硬约束 / 单 agent 降级） · <b>黄金集只进判定侧</b> · <b>对抗/边界默认 3 轮冷启动</b> · 缺证从严 · 版本锁定</div>
   </div>
 
   <div class="grid">
@@ -107,7 +107,7 @@
         <div class="no">S2</div>
         <div class="st-body">
           <div class="st-name">执行 <span class="role green">执行者 · 子智能体</span></div>
-          <div class="st-desc">真实环境逐用例跑；只采集最终输出 + 关键行为结果；留<b>执行轨迹</b>（含用例编号，进证据包）</div>
+          <div class="st-desc">真实环境逐用例跑；只采集最终输出 + 关键行为结果；留<b>执行轨迹</b>（含用例编号，进证据包）；<b>只见用例 input + 被测技能本体</b>（黄金集流向红线，永不接触 expected_behavior）；对抗/边界<b>每例冷启动 + 默认 3 轮</b>，正常成功可批量 1 轮</div>
         </div>
       </div>
       <div class="stage">
@@ -142,7 +142,7 @@
         <div class="no">S6</div>
         <div class="st-body">
           <div class="st-name">输出 <span class="role gray">评测AI</span></div>
-          <div class="st-desc">评测记录 + 维度汇总 + 达标行（如有）+ 差距分类 + 改进建议 + 确认状态；<b>报告头版本锁定</b>（资料/黄金集/环境/有效期）· <b>不裁决但必给建议</b>；全过+风险信号 → <b>覆盖盲区提示</b>；样本量 &lt;30 → 措辞收紧"仅参考"</div>
+          <div class="st-desc">评测记录 + 维度汇总 + 达标行（如有）+ 差距分类 + 改进建议 + 确认状态；<b>报告头版本锁定</b>· <b>轮次显式</b>（实际轮次 + 折算依据，单轮标「单轮（产物级证据）」）· <b>不裁决但必给建议</b>；全过+风险信号 → <b>覆盖盲区提示</b>（多轮一致不消除告警）；样本量 &lt;30 → 措辞收紧「仅参考」</div>
         </div>
       </div>
     </div>

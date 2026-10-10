@@ -72,7 +72,7 @@
 - 角色分离：执行者 / 判定者分设，存疑复核（核验者）等按需启用（子智能体；单 agent 则声明单人自评）；判定不看轨迹，轨迹仅防守性（存疑时证伪）。
 - **不达标闭环**：评测技能输出评价报告 + 改进建议（不通过类型 → 建议模板 + AI 润色），**员工自行调整自己的业务技能**，调整后重评。
 - **问题回填升级（黄金集自增值）**：评测中发现的问题用例 → 保留原输入 → 专家补标准输出 / 期望行为 + 判断依据 + 专家点评 → 升级为黄金用例 → 纳入回归；对抗类升级为安全回归用例（阻断性单列门禁）；升级后黄金集版本变更，旧结论按版本绑定失效。**前置条件：归因拆分（S3.5）判定为技能行为才允许回填；判定偏差先去改判定口径，不得直接回填（防基准污染）**。
-- **稳定性观测（可选扩展）**：对存疑 / 边界 / 对抗类用例，可额外多次运行（建议 2–3 次）观察输出分布，结果作为 `可靠性` 维度参考；大规模评测业务可在 fork 时扩展「多次运行 + 通过@k 聚合 + LLM 异常检测」流水线（发起方自评场景不作通用要求）。
+- **稳定性观测（可选扩展，内核已默认多轮）**：S2 已对对抗 / 边界 / 存疑类默认跑 3 轮并折算多数一致（见内核 `references/execution-flow.md` S2「多轮执行与折算」）；本条为 fork 侧的更大规模扩展：多次运行（5 次 / 10+ 次）观察输出分布，结果作为 `可靠性` 维度参考；大规模评测业务可在 fork 时扩展「多次运行 + 通过@k 聚合 + LLM 异常检测」流水线（发起方自评场景不作通用要求）。
 
 ### Step 7 · 交付发起方 + 升级回流
 - 交付专用技能 + 验收门槛确认记录 + 黄金集版本说明。
@@ -85,13 +85,14 @@
 | **不可变（禁改）** | 三维度框架（结果正确性 / 规则与边界 / 可靠与兜底） | 判定结构不拆不改 |
 | | 七条铁律（缺证从严、不裁决但必给建议、双源黄金集、分维度独立表达、样本边界、版本锁定、对比只改一类变量） | 逐条继承 |
 | | 结果导向（评分只看最终结果，轨迹仅防守性） | 可否决、不可授分 |
-| | 阻断性失败 → 整例不通过（一票否决） | 不被平均分抵消 |
+| | 阻断性失败 → 整例不通过（一票否决） | 不被平均分抵消；多轮下**任一轮阻断性失败即不通过**（不适用多数一致） |
+| | 评测数据流（黄金集流向红线） | 执行者只见用例 input + 被测技能本体；黄金集只进判定侧；执行者泄题即轮次作废 |
 | **可定制（允许）** | 分维度验收门槛数值 | 多人讨论 + 确认记录（看结果前签认） |
 | | 场景样本集·黄金集场景分类扩展 | 3 大类 19 子类基础上按业务增补 |
 | | 黄金集来源与场景样本集 | 随业务更换；无业务黄金集 → 仅契约一致性 |
 | | 报告措辞业务化 | 术语/表述可改，判定口径不改 |
 | | 评测资产存放位置与命名 | 通用默认 `cases/<被测技能>/`（场景样本集 / 黄金集文件，即 `场景样本集-<版本>.md` + `黄金集-<版本>.md`，只增不改）；业务可改存放位置，资产复用 / 升级规则不变 |
-| | 稳定性观测 / 聚合找异常（可选增强） | 多次运行 + 通过@k 聚合 + LLM 异常检测，发起方自评非通用要求 |
+| | 稳定性观测 / 聚合找异常（可选增强） | 内核已默认 S2 多轮（对抗/边界/存疑 3 轮冷启动）；fork 可调轮次数与批量/冷启动分档线，但**不得关闭对抗类多轮**；更大规模（多次运行 + 通过@k 聚合 + LLM 异常检测）发起方自评非通用要求 |
 | **可选新增** | 「过程合规」专用维度 | 仅强合规业务；轨迹成为该维度正式判定输入 |
 
 ## 6. 强合规出口（可选专用维度）
@@ -144,6 +145,9 @@
 
 | 日期 | 版本 | 变更摘要 | 关联文件 |
 |---|---|---|---|
+| 2026-10-10 | v1.5.11 | 产物形态分层：执行期 md / 交付期 doc·xlsx；三类签认记录（黄金集确认 / 复用确认 / 验收门槛）统一 doc；交付态由 agent 按 md 模板现场生成，二进制不进仓库 | SKILL.md、package.json、fork-sop.md、docs/maintenance.md、README.md、assets/examples/crm-retail/README.md、assets/sop-overview.md、assets/sop-overview-graphic/terms-and-docs.html |
+| 2026-10-10 | v1.5.10 | 第二轮全项目润色：演示样例与案例（examples / cases）纳入引号「」统一与装饰性 em dash 清理；v1.5.7–1.5.9 新增文字补齐直角引号与常规标点（修正「卖的是成本」→「付的是成本」、删「换言之」过渡词）；HTML 速查页文本节点引号统一（PNG 内容未变不重渲）；direction-approved 决策留痕按原样保留；判定口径、数字、机制与章节编号不变 | SKILL.md、package.json、fork-sop.md、docs/maintenance.md、references/execution-flow.md、references/evaluation-framework.md、assets/evaluation-report-template.md、assets/examples/crm-retail/、assets/sop-overview.md、assets/sop-overview-graphic/sop-overview.html、assets/sop-overview-graphic/terms-and-docs.html、cases/crm-retail/ |
+| 2026-10-10 | v1.5.9 | 评测数据流与多轮机制：黄金集流向红线（执行者 S2 只见用例 input + 被测技能本体，黄金集只进判定侧 S3/S4/S6）；执行者按风险分层分配（正常成功可批量 / 对抗边界每例冷启动）；S2 默认多轮（对抗 / 边界 / 存疑 3 轮冷启动、多数一致折算，任一轮阻断性失败即不通过；泄题轮作废不计配额），折算后的单条判定才进 S4；对比轮次一致性（铁律 7 扩展适用） | SKILL.md、references/execution-flow.md、references/evaluation-framework.md、references/gotchas.md、docs/maintenance.md、assets/sop-overview.md、assets/sop-overview-graphic/、fork-sop.md |
 | 2026-10-10 | v1.5.8 | 常见错误新增 3 条红线（16 → 19 条）：① 执行者（S2）泄题——提示词出现「预期 / 应该 / 正确表现 / expected_behavior」或把黄金集（含期望行为）交给执行者，等于开卷考试、全过必然且无意义；② 契约一致性评测（无业务黄金集）口头拒绝类用例缺外部锚点应记「无法判定」而非通过；③ 全过 = 告警信号，无外部证据须补样本或回查泄题 | references/gotchas.md、SKILL.md、README.md、assets/sop-overview-graphic/terms-and-docs.html |
 | 2026-10-10 | v1.5.7 | 评测角色体系分层：常驻角色（执行者 / 判定者 / 人工）+ 可选触发动作（存疑复核 / AI 全量复核 / 多视角，按触发条件启用、不占常驻席位）+ 干系人表（发起方 / 业务方 / 被测方 / 业务专家 / 运营）；角色分离强度对齐——多主体硬约束、单 agent 降级纪律，消除「硬约束」与单人降级声明的措辞矛盾；多视角专家改述「记录分歧、喂人工抽审」，删去一致性暗示；名字全保留（业务方 / 复核者不动） | SKILL.md、assets/sop-overview.md、assets/sop-overview-graphic/terms-and-docs.html、references/evaluation-framework.md、references/execution-flow.md、docs/maintenance.md |
 | 2026-10-10 | v1.5.6 | 文档润色与结构整理：全库中文引号统一「」（直/弯引号转直角引号，代码块与版本历史行除外）；装饰性 em dash 分句改常规标点（输出串字面量「禁判——无业务黄金集」保留）；术语统一（硬纪律 → 铁律、铁律③ → 铁律 3、何时用 → 何时使用）；evaluation-framework 修复断裂引用块、收紧 §4.2 模板与列表冗余空行；判定口径、数字、机制与章节编号不变 | SKILL.md、README.md、package.json、fork-sop.md、references/evaluation-framework.md、references/execution-flow.md、references/confirmation-gate.md、references/input-check.md、references/gotchas.md、assets/sop-overview.md、assets/three-piece-sample.md、assets/score-sheet-template.md、assets/threshold-approval-template.md、assets/sop-overview-graphic/terms-and-docs.html（版本串同步） |
