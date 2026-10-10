@@ -15,8 +15,6 @@
   3. CRM 逐例三维度重算，与报告汇总 / 量化演示 / 复跑勘误数字对账
   4. 安装器 5 组边界（Node vm 假 fs：缺参 / 空串 / 空白 / flag / 合法路径；不真实安装）
   5. 关键文件 / 章节引用存在性（真实解析引用目标，非关键词扫描）
-
-范围：cases/herdr-local-pilot（试点工作目录）不在本检查范围，由其工作流自管。
 """
 import argparse
 import json
@@ -37,16 +35,13 @@ SCRIPTS_DIR = Path(__file__).resolve().parent
 REPO_ROOT = SCRIPTS_DIR.parent
 DIMS = ("结果正确性", "规则与边界", "可靠与兜底")
 SKIP_DIRS = {".git", "node_modules", "%SystemDrive%"}
-SKIP_SUBPATHS = (("cases", "herdr-local-pilot"),)
 FILE_REF = re.compile(r"(?:(?:references|assets|cases|docs|scripts)/)?[A-Za-z0-9_\-./]+\.md")
 SEC_REF = re.compile(r"§(\d+(?:\.\d+)?|[一二三四五六七八九十]{1,3})(?![\d.])")
 CHINESE = {"一", "二", "三", "四", "五", "六", "七", "八", "九", "十", "十一", "十二"}
 
 
 def _skipped(parts):
-    if any(p in SKIP_DIRS for p in parts):
-        return True
-    return any(parts[i:i + 2] == sub for sub in SKIP_SUBPATHS for i in range(len(parts) - 1))
+    return any(p in SKIP_DIRS for p in parts)
 
 
 def md_files(root):
@@ -319,7 +314,7 @@ CHECKS = [
 ]
 
 COPY_ITEMS = ["SKILL.md", "README.md", "package.json", "install.js", "fork-sop.md",
-              "references", "assets", "cases", "docs"]  # 复制整个 cases：仅保证 README 引用的文件存在；检查仍按 _skipped 排除 herdr-local-pilot
+              "references", "assets", "cases", "docs"]  # 复制完整案例目录，保证文档引用在临时副本中有效
 
 TAMPERS = [
     ("示例汇总数被篡改（规则与边界 3/3 → 2/4）",

@@ -1,4 +1,0 @@
-# Preserve the exact bytes of source snapshots referenced by SHA256.
-cases/herdr-local-pilot/official-*.txt -text
-cases/herdr-local-pilot/skill-snapshot/SKILL.md -text
-cases/herdr-local-pilot/skill-snapshot/references/sop.md -text

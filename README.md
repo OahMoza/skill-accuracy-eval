@@ -91,14 +91,14 @@ skill-accuracy-eval/
 2. **确认门**：黄金集逐条指回来源后锁定；确认不了标 `待确认`，缺资料不进入执行；可一并声明分维度验收门槛（多人讨论 + 确认记录）与版本字段（业务资料 / 黄金集 / 运行环境 / 有效期）。
 3. **S1–S6**：锁定 → 真实环境执行（只采最终结果）→ 三维度判定（缺证从严）→ 按维度汇总通过率 + 达标判定（有验收门槛时）+ 差距分类 + 改进建议 → 复核 → 输出评测记录 + 版本锁定 + 边界说明。
 
-完整方法论见 `SKILL.md`；模拟判定教学样例见 `assets/examples/crm-retail/README.md`。真实只读 CLI 试点与正式评测待确认资料见 `cases/herdr-local-pilot/README.md`（仅技术冒烟，不代表技能行为评测已完成）。
+完整方法论见 `SKILL.md`；模拟判定教学样例见 `assets/examples/crm-retail/README.md`。
 
 ## 仓库维护（维护者用）
 
 - 回归检查：`npm run check`（等价 `python scripts/check_regression.py`），覆盖五项——frontmatter 真实 YAML 解析与三处版本同步、markdown 表格列数、CRM 逐例汇总与报告 / 量化演示 / 复跑勘误对账、安装器 5 组边界（Node vm 假 fs，不真实安装）、文件与章节引用存在性；任一项失败退出码非零。
 - 自检：`python scripts/check_regression.py --selftest`——在临时目录副本上故意篡改示例汇总数 / 模板列 / 安装守卫，验证入口能捕捉关键回归；不改真实文件、不提交临时目录。
 - 依赖（维护者自备，不自动安装）：Python 3.8+、PyYAML、Node ≥ 14。
-- **检查工具属于仓库维护，不属于被测技能执行依赖**：`npm run check` 仅限仓库内使用；`package.json` `files` 白名单不含 `scripts/` 与 `docs/`，npm 包不随技能分发。
+- **检查工具仅供仓库维护，使用本 Skill 无需运行检查或安装维护依赖**：`npm run check` 仅限仓库内使用；`package.json` `files` 白名单不含 `scripts/` 与 `docs/`，检查脚本与维护说明不随技能包分发。
 - 限度：文本级回归检查，不是语义审计或正式评测的替代；事实源治理与各主题权威源映射见 `docs/maintenance.md`。
 
 ## 注意

@@ -1,5 +1,0 @@
-herdr worktree commands:
-  herdr worktree list [--workspace ID | --cwd PATH] [--trust-repository]
-  herdr worktree create [--workspace ID | --cwd PATH] [--branch NAME] [--base REF] [--path PATH] [--label TEXT] [--focus] [--no-focus] [--trust-repository]
-  herdr worktree open [--workspace ID | --cwd PATH] (--path PATH | --branch NAME) [--label TEXT] [--focus] [--no-focus] [--trust-repository]
-  herdr worktree remove --workspace ID [--force] [--trust-repository]
